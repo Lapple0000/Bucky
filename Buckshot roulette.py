@@ -9,6 +9,7 @@ letters = ["a", 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
 shotgun = []
 cigarette_count = 0
 mag_glass_count = 0
+beer_count = 0
 
 def get_health():
     return random.randint(2,6)
@@ -16,7 +17,7 @@ health = get_health()
 max_health = health
 
 def shotgun_round():
-    round1 = random.randint(1,99)
+    round1 = random.randint(0,99)
     if round1 % 2 == 0 :
         return "blank"
     if round1 % 2 != 0:
@@ -42,7 +43,7 @@ def cigarettes():
     if health < max_health:
         health += 1
     else:
-        print("\nAlready full health. You wasted an item\n")
+        print("\nAlready full health. You wasted an item")
         
     cigarette_count -= 1
     
@@ -56,5 +57,4 @@ def mag_glass():
         print('Live')
     mag_glass_count -= 1
     
-load_shotgun()
-mag_glass()
+
