@@ -239,6 +239,7 @@ def p1():
                 print(f'\n{letters[letter_index]}. {i}')
                 letter_index += 1
             ans2 = input()
+            letter_index = 26
             
                 
 
