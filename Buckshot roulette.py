@@ -165,9 +165,8 @@ def med():
     med_count -= 1
     
 
-load_shotgun()
 def p1():
-    global item_count_p1, med_count, cig_count, inv_count, saw_count, cuff_count, mag_count, beer_count, adl_count, phone_count, health, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
+    global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, item_list_p1
     while turn == 1:
         ans = input("\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\n").lower()
         if ans == 'a':
@@ -232,6 +231,16 @@ def p1():
                 print('\nYou get an extra turn.')
                 time.sleep(2)
                 
+        elif ans == 'c':
+            print("\nPick your item\n")
+            time.sleep(2)
+            letter_index = 26
+            for i in item_list_p1:
+                print(f'\n{letters[letter_index]}. {i}')
+                letter_index += 1
+            ans2 = input()
+            
+                
 
     
 def p2():
@@ -253,4 +262,3 @@ def get_items():
         item_list_p2.append(item_list[item_index])
         item_count_p2 += 1
         
-get_items()
