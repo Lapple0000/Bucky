@@ -1,8 +1,3 @@
-'''Things to add
-The shotgun storage
-health from 2-6
-items
-shotgun mechanics'''
 import time
 import random
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
