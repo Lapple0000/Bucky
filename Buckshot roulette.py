@@ -5,17 +5,8 @@ items
 shotgun mechanics'''
 import time
 import random
-letters = ["a", 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', "A", 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 shotgun = []
-cig_count = 0 #done
-mag_count = 0 #done
-beer_count = 0 #done
-saw_count = 0 #done 
-phone_count = 0 #done
-inv_count = 0 #done
-cuff_count = 0 #done
-adl_count = 0
-med_count = 0 #done
 
 item_count_p1 = 0
 item_count_p2 = 0
@@ -30,6 +21,7 @@ cuff_active = False
 item_list_p1 = [] #list of items you have
 item_list_p2 = []
 item_list = ['Cigarettes', 'Magnifying Glass', 'Beer', 'Saw', 'Phone', 'Inverter', 'Handcuffs', 'Expired Medicine', 'Adrenaline'] #list of all items
+
 
 def get_health():
     global health
@@ -57,38 +49,43 @@ def load_shotgun():
     global shotgun
     for i in range(shotgun_cap()):
         shotgun.append(shotgun_round())
-        
+load_shotgun()
+find = random.randint(1, len(shotgun)) #determines which shell the phone selects
+
         
 def cigs():
     global item_count_p1
     global health
-    global max_health
-    global cig_count
+    global max_health 
     if health < max_health:
         health += 1
     else:
         print("\nAlready full health. You wasted an item")
         
-    cig_count -= 1
     item_count_p1 -= 1
+    item_list_p1.remove('Cigarettes')
     
 def mag():
     global shotgun
-    global mag_count
     global item_count_p1
     if shotgun[0] == 'Blank':
+        time.sleep(2)
         print("\nBlank")
+        time.sleep(2)
         
     elif shotgun[0] == 'Live':
+        time.sleep(2)
         print('\nLive')
-    mag_count -= 1
+        time.sleep(2)
+    
     item_count_p1 -= 1
+    item_list_p1.remove('Magnifying Glass')
     
 def beer():
-    global shotgun
-    global beer_count
+    global shotgun 
     global item_count_p1
     global beer_use
+    global find
     if shotgun[0] == 'Blank':
         print('\nBlank')
     
@@ -96,54 +93,72 @@ def beer():
         print('\nLive')
         
     del shotgun[0]
-    beer_count -= 1
     item_count_p1 -= 1
-    beer_use += 1
+    beer_use += 1 #Used only for showing this exact stat at the end of the game
+    item_list_p1.remove('Beer')
+    find = random.randint(1, len(shotgun))
     
 def saw():
-    global saw_active
-    global saw_count
-    saw_active = True
-    saw_count -= 1
+    global saw_active 
+    global item_count_p1
+    time.sleep(2)
+    if not saw_active:
+        item_count_p1 -= 1
+        saw_active = True
+        
+        item_list_p1.remove('Saw')
+        print('\nYou sawed off the shotgun. Double damage.')
+    else:
+        print('\nYou already used a saw. Nothing Happens')
+    time.sleep(2)
     
-def phone():
-    global phone_count
+def phone(): 
     global item_count_p1
     global shotgun
-    find = random.randint(1, len(shotgun))
+    global find
     print(f'\nShell {find + 1}...')
-    time.sleep(1)
+    time.sleep(2)
     print(f'\n{shotgun[find]}')
-    phone_count -= 1
-    item_count_p1 -= 1
+    time.sleep(2)
     
-def inv():
-    global inv_count
+    item_count_p1 -= 1
+    item_list_p1.remove('Phone')
+    
+def inv(): 
     global item_count_p1
     global shotgun
+    time.sleep(2)
     if shotgun[0] == 'Blank':
         shotgun[0] = 'Live'
         
     elif shotgun[0] == 'Live':
         shotgun[0] = 'Blank'
-    print('\nInverted')    
-    inv_count -= 1
-    item_count_p1 -= 1
+    print('\nInverted')
+    time.sleep(2)
     
+    item_count_p1 -= 1
+    item_list_p1.remove('Inverter')
 def cuff():
     global cuff_active
-    global item_count_p1
-    global cuff_count
-    cuff_active = True
-    item_count_p1 -= 1
-    cuff_count -= 1
-    
+    global item_count_p1 
+    if not cuff_active:
+        cuff_active = True
+        item_count_p1 -= 1
+        
+        item_list_p1.remove('Handcuffs')
+        print('\nThe dealer takes the handcuffs and cuffs himself.')
+        time.sleep(2)
+    else:
+        print('\nThe Dealer already has handcuffs on. Nothing happens')
+        time.sleep(2)
+        
 def med():
     global health
     global max_health
-    global item_count_p1
-    global med_count
+    global item_count_p1 
     chance = random.randint(1, 99)
+    print('\nYou swallow the pill')
+    time.sleep(2)
     if chance % 2 == 0:
         health -= 1
         print('\nUnlucky. Lost 1 health.')
@@ -160,15 +175,15 @@ def med():
         else:
             health += 2
             print('\nGained 2 health.')
-            
+    time.sleep(2)
     item_count_p1 -= 1
-    med_count -= 1
     
+    item_list_p1.remove('Expired Medicine')
 
 def p1():
-    global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, item_list_p1
+    global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, item_list_p1, find
     while turn == 1:
-        ans = input("\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\n").lower()
+        ans = input("\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\n").lower()
         if ans == 'a':
             shot = shotgun.pop(0)
             if shot == 'Live':
@@ -178,6 +193,7 @@ def p1():
                 time.sleep(2)
                 print('\nDealer lost 1 health.')
                 time.sleep(2)
+                find = random.randint(1, len(shotgun))
                 if saw_active:
                     dealer_health -= 2
                         
@@ -189,7 +205,7 @@ def p1():
                     
                 else:
                     turn = 2
-                    
+                
             elif shot == 'Blank':
                 print('\n...')
                 time.sleep(2)
@@ -197,6 +213,7 @@ def p1():
                 time.sleep(2)
                 print('\nDealer unharmed')
                 time.sleep(2)
+                find = random.randint(1, len(shotgun))
                 if cuff_active:
                     cuff_active = False
                     turn = 1
@@ -213,6 +230,7 @@ def p1():
                 time.sleep(2)
                 print('\nYou lose 1 health.')
                 time.sleep(2)
+                find = random.randint(1, len(shotgun))
                 if saw_active:
                     health -= 2
                 else:
@@ -230,22 +248,54 @@ def p1():
                 time.sleep(2)
                 print('\nYou get an extra turn.')
                 time.sleep(2)
+                find = random.randint(1, len(shotgun))
                 
         elif ans == 'c':
-            print("\nPick your item\n")
-            time.sleep(2)
-            letter_index = 26
-            for i in item_list_p1:
-                print(f'\n{letters[letter_index]}. {i}')
-                letter_index += 1
-            ans2 = input()
-            letter_index = 26
-            
-                
+            item_selection_p1 = True
+            print("\n\nPick your item\n")
+            while item_selection_p1:
+                time.sleep(2)
+                letter_index = 0
+                for i in item_list_p1:
+                    print(f'\n{letters[letter_index]}. {i}')
+                    letter_index += 1
+                max_letters = letters[0:letter_index]
+                ans2 = input().upper()
+                if ans2 not in max_letters:
+                    print('\nNot an item choice\n')
+                    
+                elif ans2 in max_letters:
+                    ans2 = max_letters.index(ans2)
+                    ans3 = item_list_p1[ans2]
+                    
+                    if ans3 == 'Cigarettes':
+                        cigs()
+                        
+                    elif ans3 == 'Beer':
+                        beer()
+                        
+                    elif ans3 == 'Phone':
+                        phone()
+                        
+                    elif ans3 == "Handcuffs":
+                        cuff()
+                        
+                    elif ans3 == "Magnifying Glass":
+                        mag()
+                        
+                    elif ans3 == 'Inverter':
+                        inv()
+                        
+                    elif ans3 == 'Saw':
+                        saw()
+                        
+                    elif ans3 == 'Expired Medicine':
+                        med()
+                item_selection_p1 = False
 
     
 def p2():
-    global item_count_p1, med_count, cig_count, inv_count, saw_count, cuff_count, mag_count, beer_count, adl_count, phone_count, health, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
+    global item_count_p1, health, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
     while turn == 2:
         time.sleep(2)
         print('\nHmm...')
@@ -262,4 +312,5 @@ def get_items():
         item_index = random.randint(0,8)
         item_list_p2.append(item_list[item_index])
         item_count_p2 += 1
-        
+                
+#When done with game, remove starting load_shotgun()
