@@ -45,7 +45,7 @@ def load_shotgun():
     for i in range(shotgun_cap()):
         shotgun.append(shotgun_round())
 load_shotgun()
-find = random.randint(1, len(shotgun)) #determines which shell the phone selects
+find = random.randint(1, len(shotgun) - 1) #determines which shell the phone selects
 
         
 def cigs():
@@ -54,11 +54,21 @@ def cigs():
     global max_health 
     if health < max_health:
         health += 1
+        time.sleep(2)
+        print(f'\n{health} health.')
     else:
         print("\nAlready full health. You wasted an item")
         
     item_count_p1 -= 1
     item_list_p1.remove('Cigarettes')
+    
+def cigs_p2():
+    global item_count_p2
+    global dealer_health
+    global max_health 
+    dealer_health += 1
+    item_count_p2 -= 1
+    item_list_p2.remove('Cigarettes')
     
 def mag():
     global shotgun
@@ -152,7 +162,7 @@ def med():
     global max_health
     global item_count_p1 
     chance = random.randint(1, 99)
-    print('\nYou swallow the pill')
+    print('\nYou swallow the pill.')
     time.sleep(2)
     if chance % 2 == 0:
         health -= 1
@@ -178,7 +188,7 @@ def med():
 def p1():
     global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, item_list_p1, find
     while turn == 1:
-        ans = input("\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\nD. See Dealer items\n").lower()
+        ans = input("\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\nD. See Dealer items\nE. See health\n").lower()
         if ans == 'a':
             shot = shotgun.pop(0)
             if shot == 'Live':
@@ -217,7 +227,7 @@ def p1():
                     turn = 2
             
         elif ans == 'b':
-            shot = shotgun.pop()
+            shot = shotgun.pop(0)
             if shot == 'Live':
                 print('\n...')
                 time.sleep(2)
@@ -252,12 +262,12 @@ def p1():
                     item_selection_p1 = False
                     time.sleep(2)
             else:
-                print("\n\nPick your item\n")
+                print("\n\nPick your item\n\n")
             while item_selection_p1:
                 time.sleep(2)
                 letter_index = 0
                 for i in item_list_p1:
-                    print(f'\n{letters[letter_index]}. {i}')
+                    print(f'{letters[letter_index]}. {i}')
                     letter_index += 1
                 max_letters = letters[0:letter_index]
                 ans2 = input().upper()
@@ -294,6 +304,7 @@ def p1():
                 item_selection_p1 = False
                 
         elif ans == 'd':
+            print('\nThe Dealer has\n')
             time.sleep(2)
             if item_count_p2 != 0:
                 for i in item_list_p2:
@@ -301,17 +312,28 @@ def p1():
             else:
                 print("\nThe dealer doesn't have any items.")
             time.sleep(2)
+            print()
+            
+        elif ans == 'e':
+            time.sleep(2)
+            print(f'\nThe Dealer has {dealer_health} health.')
+            time.sleep(2)
+            print(f'\nYou have {health} health.')
+            time.sleep(2)
+            
+        elif ans == 'debug':
+            print(shotgun)
 
     
 def p2():
     global item_count_p1, health, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
     while turn == 2:
         time.sleep(2)
-        print('\nHmm...')
         if item_count_p2 != 0:
-            if beer in item_list_p2:
-                print('\nThe Dealer chooses to drink a beer.')
-                beer()
+            if dealer_health != max_health:
+                cigs_p2()
+                
+            
         
 def get_items():
     global item_count_p1, item_count_p2
@@ -327,8 +349,13 @@ def get_items():
         item_count_p2 += 1
         
 get_items()
+get_health()
+item_list_p1[0] = 'Expired Medicine'
+item_list_p1[1] = 'Expired Medicine'
+item_list_p1[2] = 'Expired Medicine'
 
 
 p1()
                 
 #When done with game, remove starting load_shotgun()
+#When done with game, remove secret debug option
