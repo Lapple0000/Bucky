@@ -16,7 +16,7 @@ cuff_active = False
 item_list_p1 = [] #list of items you have
 item_list_p2 = []
 item_list = ['Cigarettes', 'Magnifying Glass', 'Beer', 'Saw', 'Phone', 'Inverter', 'Handcuffs', 'Expired Medicine', 'Adrenaline'] #list of all items
-
+dealer_knows = False #The dealer in game uses logic 100% correct
 
 def get_health():
     global health
@@ -178,7 +178,7 @@ def med():
 def p1():
     global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, item_list_p1, find
     while turn == 1:
-        ans = input("\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\n").lower()
+        ans = input("\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\nD. See Dealer items\n").lower()
         if ans == 'a':
             shot = shotgun.pop(0)
             if shot == 'Live':
@@ -247,7 +247,12 @@ def p1():
                 
         elif ans == 'c':
             item_selection_p1 = True
-            print("\n\nPick your item\n")
+            if item_count_p1 == 0:
+                    print('\nYou have no items')
+                    item_selection_p1 = False
+                    time.sleep(2)
+            else:
+                print("\n\nPick your item\n")
             while item_selection_p1:
                 time.sleep(2)
                 letter_index = 0
@@ -287,6 +292,15 @@ def p1():
                     elif ans3 == 'Expired Medicine':
                         med()
                 item_selection_p1 = False
+                
+        elif ans == 'd':
+            time.sleep(2)
+            if item_count_p2 != 0:
+                for i in item_list_p2:
+                    print(f'\n{i}')
+            else:
+                print("\nThe dealer doesn't have any items.")
+            time.sleep(2)
 
     
 def p2():
@@ -294,6 +308,10 @@ def p2():
     while turn == 2:
         time.sleep(2)
         print('\nHmm...')
+        if item_count_p2 != 0:
+            if beer in item_list_p2:
+                print('\nThe Dealer chooses to drink a beer.')
+                beer()
         
 def get_items():
     global item_count_p1, item_count_p2
@@ -307,5 +325,10 @@ def get_items():
         item_index = random.randint(0,8)
         item_list_p2.append(item_list[item_index])
         item_count_p2 += 1
+        
+get_items()
+
+
+p1()
                 
 #When done with game, remove starting load_shotgun()
