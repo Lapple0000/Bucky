@@ -2,6 +2,8 @@ import time
 import random
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 shotgun = []
+def w:
+    time.sleep(2)
 
 item_count_p1 = 0
 item_count_p2 = 0
@@ -13,10 +15,12 @@ max_health = 0
 dealer_health = 0
 turn = 1
 cuff_active = False
+cuff_active_p2 = False
 item_list_p1 = [] #list of items you have
 item_list_p2 = []
 item_list = ['Cigarettes', 'Magnifying Glass', 'Beer', 'Saw', 'Phone', 'Inverter', 'Handcuffs', 'Expired Medicine', 'Adrenaline'] #list of all items
-dealer_knows = False #The dealer in game uses logic 100% correct
+dealer_knows_current = False #The dealer in game uses logic 100% correct
+dealer_knows_which = []
 
 def get_health():
     global health
@@ -65,10 +69,12 @@ def cigs():
 def cigs_p2():
     global item_count_p2
     global dealer_health
-    global max_health 
+    print('\nThe Dealer decides to smoke a cigarette.')
+    time.sleep(2)
     dealer_health += 1
     item_count_p2 -= 1
     item_list_p2.remove('Cigarettes')
+    print(f'\nDealer now at {dealer_health} health')    
     
 def mag():
     global shotgun
@@ -86,6 +92,14 @@ def mag():
     item_count_p1 -= 1
     item_list_p1.remove('Magnifying Glass')
     
+def mag_p2():
+    global shotgun
+    global item_count_p2
+    global dealer_knows_current
+    dealer_knows_current = True
+    item_count_p2 -= 1
+    item_list_p2.remove('Magnifying Glass')
+    
 def beer():
     global shotgun 
     global item_count_p1
@@ -101,7 +115,24 @@ def beer():
     item_count_p1 -= 1
     beer_use += 1 #Used only for showing this exact stat at the end of the game
     item_list_p1.remove('Beer')
-    find = random.randint(1, len(shotgun))
+    find = random.randint(1, len(shotgun) -1)
+    
+def beer_p2():
+    global shotgun 
+    global item_count_p2
+    global find
+    print('\nThe Dealer decides to drink his beer')
+    w()
+    if shotgun[0] == 'Blank':
+        print('\nBlank')
+    
+    elif shotgun[0] == 'Live':
+        print('\nLive')
+    w()
+    del shotgun[0]
+    item_count_p2 -= 1
+    item_list_p2.remove('Beer')
+    find = random.randint(1, len(shotgun) -1)
     
 def saw():
     global saw_active 
@@ -117,6 +148,17 @@ def saw():
         print('\nYou already used a saw. Nothing Happens')
     time.sleep(2)
     
+def saw_p2():
+    global saw_active 
+    global item_count_p2
+    time.sleep(2)
+    if not saw_active:
+        item_count_p2 -= 1
+        saw_active = True
+        item_list_p2.remove('Saw')
+        print('\nThe Dealer off the shotgun. Double damage.')
+    time.sleep(2)
+    
 def phone(): 
     global item_count_p1
     global shotgun
@@ -128,6 +170,15 @@ def phone():
     
     item_count_p1 -= 1
     item_list_p1.remove('Phone')
+    
+def phone_p2(): 
+    global item_count_p2
+    global shotgun
+    global find
+    print('\nThe Dealer decides to use his phone.')
+    dealer_knows_which.append(find)
+    item_count_p2 -= 1
+    item_list_p2.remove('Phone')
     
 def inv(): 
     global item_count_p1
@@ -143,6 +194,23 @@ def inv():
     
     item_count_p1 -= 1
     item_list_p1.remove('Inverter')
+    
+def inv_p2(): 
+    global item_count_p2
+    global shotgun
+    print('\nThe dealer decides to use his inverter.')
+    time.sleep(2)
+    if shotgun[0] == 'Blank':
+        shotgun[0] = 'Live'
+        
+    elif shotgun[0] == 'Live':
+        shotgun[0] = 'Blank'
+    print('\nInverted')
+    time.sleep(2)
+    
+    item_count_p2 -= 1
+    item_list_p2.remove('Inverter')
+    
 def cuff():
     global cuff_active
     global item_count_p1 
@@ -156,6 +224,15 @@ def cuff():
     else:
         print('\nThe Dealer already has handcuffs on. Nothing happens')
         time.sleep(2)
+        
+def cuff_p2():
+    global cuff_active_p2
+    global item_count_p2 
+    cuff_active = True
+    item_count_p2 -= 1    
+    item_list_p1.remove('Handcuffs')
+    print('\nThe Dealer cuffs you to the table.')
+    time.sleep(2)
         
 def med():
     global health
@@ -184,6 +261,30 @@ def med():
     item_count_p1 -= 1
     
     item_list_p1.remove('Expired Medicine')
+    
+def med_p2():
+    global dealer_health
+    global max_health
+    global item_count_p2 
+    chance = random.randint(1, 99)
+    print('\nThe Dealer takes expired medicine.')
+    time.sleep(2)
+    if chance % 2 == 0:
+        health -= 1
+        print('\nThe Dealer lost 1 health.')
+        
+    elif chance % 2 != 0:
+        if max_health - 1 == dealer_health:
+            dealer_health += 1
+            print("\nThe Deaker gained 1 health.")
+            
+        else:
+            dealer_health += 2
+            print('\nThe Dealer gained 2 health.')
+    time.sleep(2)
+    item_count_p2 -= 1
+    
+    item_list_p2.remove('Expired Medicine')
 
 def p1():
     global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, item_list_p1, find
@@ -198,7 +299,7 @@ def p1():
                 time.sleep(2)
                 print('\nDealer lost 1 health.')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun))
+                find = random.randint(1, len(shotgun) -1)
                 if saw_active:
                     dealer_health -= 2
                         
@@ -218,7 +319,7 @@ def p1():
                 time.sleep(2)
                 print('\nDealer unharmed')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun))
+                find = random.randint(1, len(shotgun) -1)
                 if cuff_active:
                     cuff_active = False
                     turn = 1
@@ -235,7 +336,7 @@ def p1():
                 time.sleep(2)
                 print('\nYou lose 1 health.')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun))
+                find = random.randint(1, len(shotgun) -1)
                 if saw_active:
                     health -= 2
                 else:
@@ -253,7 +354,7 @@ def p1():
                 time.sleep(2)
                 print('\nYou get an extra turn.')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun))
+                find = random.randint(1, len(shotgun) -1)
                 
         elif ans == 'c':
             item_selection_p1 = True
@@ -310,7 +411,7 @@ def p1():
                 for i in item_list_p2:
                     print(f'\n{i}')
             else:
-                print("\nThe dealer doesn't have any items.")
+                print("\nThe Dealer doesn't have any items.")
             time.sleep(2)
             print()
             
@@ -331,8 +432,13 @@ def p2():
         time.sleep(2)
         if item_count_p2 != 0:
             if dealer_health != max_health:
-                cigs_p2()
-                
+                if 'Cigarettes' not in item_list_p2:
+                    med_p2()
+                    
+                elif 'Cigarettes' in item_list_p2:
+                    cigs_p2()
+                    
+            if dealer_knows_current
             
         
 def get_items():
