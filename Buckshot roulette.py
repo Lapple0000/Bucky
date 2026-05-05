@@ -30,22 +30,23 @@ def dealer_knowledge():
     global dealer_knows_current
     global dealer_knows_all
     dealer_index = 0
-    rem = 0
+    reme = 0
     for i in dealer_knows_which:
         dealer_knows_which[dealer_index] -= 1
-        if dealer_knows_which[dealer_index] == 0:
-            rem += 1
+        dealer_index += 1
+    if dealer_knows_which != []:
+        if dealer_knows_which[0] == 0:
             dealer_knows_current = True
-    for i in range(rem):
-        dealer_knows_which.remove(0)
-    dealer_not_know = shotgun
-    for i in dealer_knows_which:
-        dealer_not_know.pop(i)
-    if 'Blank' not in dealer_not_know:
-        dealer_knows_all = True
-    elif 'Live' not in dealer_not_know:
-        dealer_knows_all = True
-    
+            del dealer_knows_which[0]
+            dealer_not_know = shotgun
+            for i in dealer_knows_which:
+                del dealer_not_know[i]
+            if 'Blank' not in dealer_not_know:
+                dealer_knows_all = True
+            elif 'Live' not in dealer_not_know:
+                dealer_knows_all = True
+    elif dealer_knows_which == []:
+        dealer_knows_all = False
 def get_find():
     global find
     if len(shotgun) == 1:
@@ -79,13 +80,21 @@ def shotgun_cap():
     
 
 def load_shotgun():
-    global shotgun_cap
+    global shotgun_cap, live_count, blank_count
     global shotgun_round
     global shotgun
     for i in range(shotgun_cap()):
         shotgun.append(shotgun_round())
+    live_len = []
+    for i in shotgun:
+        if i == 'Live':
+            add 
+    if shotgun_cap == 3:
+        if live_count = 2:
+            
+        
 load_shotgun()
-find = random.randint(1, len(shotgun) - 1) #determines which shell the phone selects
+find = random.randint(1, len(shotgun) - 1) #determines which sitll The phone selects
 
         
 def cigs():
@@ -150,7 +159,7 @@ def beer():
         
     del shotgun[0]
     item_count_p1 -= 1
-    beer_use += 1 #Used only for showing this exact stat at the end of the game
+    beer_use += 1 #Used only for showing tits exact stat at The end of The game
     p1_inventory.remove('Beer')
     get_find()
     dealer_knowledge
@@ -159,7 +168,7 @@ def beer_p2():
     global shotgun 
     global item_count_p2
     global find
-    print('\nThe Dealer decides to drink his beer')
+    print('\nThe Dealer decides to drink its beer')
     w()
     if shotgun[0] == 'Blank':
         print('\nBlank')
@@ -201,7 +210,7 @@ def phone():
     global item_count_p1
     global shotgun
     global find
-    print(f'\nShell {find + 1}...')
+    print(f'\nSitll {find + 1}...')
     time.sleep(2)
     print(f'\n{shotgun[find]}')
     time.sleep(2)
@@ -212,7 +221,7 @@ def phone():
 def phone_p2(): 
     global item_count_p2
     global find
-    print('\nThe Dealer decides to use his phone.')
+    print('\nThe Dealer decides to use its phone.')
     dealer_knows_which.append(find)
     item_count_p2 -= 1
     p2_inventory.remove('Phone')
@@ -237,7 +246,8 @@ def inv_p2():
     global item_count_p2
     global p2_inventory
     global shotgun
-    print('\nThe Dealer decides to use his inverter.')
+    
+    print('\nThe Dealer decides to use its inverter.')
     time.sleep(2)
     if shotgun[0] == 'Blank':
         shotgun[0] = 'Live'
@@ -258,7 +268,7 @@ def cuff():
         item_count_p1 -= 1
         
         p1_inventory.remove('Handcuffs')
-        print('\nThe Dealer takes the handcuffs and cuffs himself.')
+        print('\nThe Dealer takes The handcuffs and cuffs itself.')
         time.sleep(2)
     else:
         print('\nThe Dealer already has handcuffs on. Nothing happens')
@@ -270,7 +280,7 @@ def cuff_p2():
     cuff_active = True
     item_count_p2 -= 1    
     p1_inventory.remove('Handcuffs')
-    print('\nThe Dealer cuffs you to the table.')
+    print('\nThe Dealer cuffs you to The table.')
     time.sleep(2)
         
 def med():
@@ -278,7 +288,7 @@ def med():
     global max_health
     global item_count_p1 
     chance = random.randint(1, 99)
-    print('\nYou swallow the pill.')
+    print('\nYou swallow The pill.')
     time.sleep(2)
     if chance % 2 == 0:
         health -= 1
@@ -473,7 +483,7 @@ def p1():
 
     
 def p2():
-    global item_count_p1, health, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
+    global item_count_p1, health, cuff_active_p2, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
     while turn == 2:
         time.sleep(2)
         if item_count_p2 != 0:
@@ -490,7 +500,7 @@ def p2():
                     phone_p2()
                     continue
                 
-            if not dealer_knows_current or dealer_knows_all:
+            if not dealer_knows_current or not dealer_knows_all:
                 if 'Beer' in p2_inventory:
                     beer_p2()
                 
@@ -523,9 +533,9 @@ def p2():
                     health -= 1
                     dealer_knowledge()    
                         
-            if shot == 'Blank':
+            elif shot == 'Blank':
                 if 'Inverter' in p2_inventory:
-                    inv_p2()
+                    print('The Dealer decides to use his Inverter')
                     if 'Saw' in p2_inventory:
                         saw_p2()
                         print('\nThe Dealer points the shotgun at you.')
@@ -545,20 +555,19 @@ def p2():
                         print('\nYou lose 1 health.')
                         health -= 1
                     dealer_knowledge()
-                if 'Inverter' not in p2_inventory:
-                    print('\nThe Dealer points the shotgun at himself')
+                elif 'Inverter' not in p2_inventory:
+                    print('\nThe Dealer points the shotgun at itself')
                     w()
                     print('\n*Click*')
                     dealer_knowledge()
-                    continue
             
-        else:
+        elif not dealer_knows_current or not dealer_knows_all:
             shot = shotgun.pop(0)
             if live_count > blank_count:
-                print('\nThe Dealer points the shotgun at you')
-                w()
                 if 'Saw' in p2_inventory:
                     saw_p2()
+                print('\nThe Dealer points the shotgun at you.')
+                w()
                 if shot == 'Blank':
                     print('\n*Click*')
                     w()
@@ -587,7 +596,7 @@ def p2():
                     w()
                 dealer_knowledge()        
             elif live_count < blank_count:
-                print('\nThe Dealer points the shotgun at himself')
+                print('\nThe Dealer points the shotgun at itself')
                 w()
                 if shot == 'Live':
                     print('\n*Boom*')
@@ -600,11 +609,41 @@ def p2():
                     else:
                         print('\nThe Dealer loses 1 health.')
                         dealer_health -= 1
+                    if cuff_active_p2:
+                        cuff_active_p2 = False
+                    else:
+                        turn = 1
                 elif shot == 'Blank':
-                    
+                    print('\n*Click*')
+                    w()
                 saw_active = False    
                 dealer_knowledge()
                 w()
+            elif live_count == blank_count:
+                chance_shot = random.randint(1,100)
+                if chance_shot % 2 == 0:
+                    print('\nThe Dealer points the shotgun at itself.')
+                    if shot == 'Live':
+                        print('\n*Boom*')
+                        w()
+                        if saw_active:
+                            print('\nThe Dealer loses 2 health.')
+                            dealer_health -= 2
+                            if dealer_health < 0:
+                                dealer_health = 0
+                        else:
+                            print('\nThe Dealer loses 1 health.')
+                            dealer_health -= 1
+                        if cuff_active_p2:
+                            cuff_active_p2 = False
+                        else:
+                            turn = 1
+                    elif shot == 'Blank':
+                        print('\n*Click*')
+                        w()
+                    saw_active = False    
+                    dealer_knowledge()
+                    w()
 def get_items():
     global item_count_p1, item_count_p2
     max_items = random.randint(3,8)
@@ -625,5 +664,5 @@ print(shotgun, live_count, blank_count)
 turn = 2
 p2()
                 
-#When done with game, remove starting load_shotgun()
-#When done with game, remove secret debug option
+#Witn done with game, remove starting load_shotgun()
+#Witn done with game, remove secret debug option
