@@ -21,10 +21,12 @@ item_list_p2 = []
 item_list = ['Cigarettes', 'Magnifying Glass', 'Beer', 'Saw', 'Phone', 'Inverter', 'Handcuffs', 'Expired Medicine', 'Adrenaline'] #list of all items
 dealer_knows_current = False #The dealer in game uses logic 100% correct
 dealer_knows_which = []
+dealer_knows_all = False
 
 def dealer_knowledge():
     global dealer_knows_which
     global dealer_knows_current
+    global dealer_knows_all
     dealer_index = 0
     rem = 0
     for i in dealer_knows_which:
@@ -34,7 +36,21 @@ def dealer_knowledge():
             dealer_knows_current = True
     for i in range(rem):
         dealer_knows_which.remove(0)
-        
+    dealer_not_know = shotgun
+    for i in dealer_knows_which:
+        dealer_not_know.pop(i)
+    if 'Blank' not in dealer_not_know:
+        dealer_knows_all = True
+    elif 'Live' not in dealer_not_know:
+        dealer_knows_all = True
+    
+def get_find():
+    global find
+    if len(shotgun) == 1:
+        find = 0
+    else:
+        find = random.randint(1, len(shotgun) -1)
+    
 
 def get_health():
     global health
@@ -84,11 +100,11 @@ def cigs_p2():
     global item_count_p2
     global dealer_health
     print('\nThe Dealer decides to smoke a cigarette.')
-    time.sleep(2)
     dealer_health += 1
     item_count_p2 -= 1
     item_list_p2.remove('Cigarettes')
-    print(f'\nDealer now at {dealer_health} health')    
+    print(f'\nDealer now at {dealer_health} health')
+    w()
     
 def mag():
     global shotgun
@@ -113,6 +129,7 @@ def mag_p2():
     dealer_knows_current = True
     item_count_p2 -= 1
     item_list_p2.remove('Magnifying Glass')
+    w()
     
 def beer():
     global shotgun 
@@ -129,7 +146,8 @@ def beer():
     item_count_p1 -= 1
     beer_use += 1 #Used only for showing this exact stat at the end of the game
     item_list_p1.remove('Beer')
-    find = random.randint(1, len(shotgun) -1)
+    get_find()
+    dealer_knowledge
     
 def beer_p2():
     global shotgun 
@@ -146,7 +164,8 @@ def beer_p2():
     del shotgun[0]
     item_count_p2 -= 1
     item_list_p2.remove('Beer')
-    find = random.randint(1, len(shotgun) -1)
+    get_find()
+    dealer_knowledge()
     
 def saw():
     global saw_active 
@@ -165,12 +184,11 @@ def saw():
 def saw_p2():
     global saw_active 
     global item_count_p2
-    time.sleep(2)
     if not saw_active:
         item_count_p2 -= 1
         saw_active = True
         item_list_p2.remove('Saw')
-        print('\nThe Dealer off the shotgun. Double damage.')
+        print('\nThe Dealer sawed off the shotgun. Double damage.')
     time.sleep(2)
     
 def phone(): 
@@ -192,6 +210,7 @@ def phone_p2():
     dealer_knows_which.append(find)
     item_count_p2 -= 1
     item_list_p2.remove('Phone')
+    w()
     
 def inv(): 
     global item_count_p1
@@ -315,6 +334,8 @@ def p1():
                 find = random.randint(1, len(shotgun) -1)
                 if saw_active:
                     dealer_health -= 2
+                    if dealer_health < 0:
+                        dealer_health = 0
                         
                 else:
                     dealer_health -= 1
@@ -339,7 +360,7 @@ def p1():
                     
                 else:
                     turn = 2
-            
+            dealer_knowledge()    
         elif ans == 'b':
             shot = shotgun.pop(0)
             if shot == 'Live':
@@ -352,6 +373,8 @@ def p1():
                 find = random.randint(1, len(shotgun) -1)
                 if saw_active:
                     health -= 2
+                    if health < 0:
+                        health = 0
                 else:
                     health -=1
                 if cuff_active:
@@ -368,6 +391,7 @@ def p1():
                 print('\nYou get an extra turn.')
                 time.sleep(2)
                 find = random.randint(1, len(shotgun) -1)
+            dealer_knowledge()
                 
                 
         elif ans == 'c':
@@ -419,11 +443,11 @@ def p1():
                 item_selection_p1 = False
                 
         elif ans == 'd':
-            print('\nThe Dealer has\n')
-            time.sleep(2)
             if item_count_p2 != 0:
+                print('\nThe Dealer has\n')
+                time.sleep(2)
                 for i in item_list_p2:
-                    print(f'\n{i}')
+                    print(i)
             else:
                 print("\nThe Dealer doesn't have any items.")
             time.sleep(2)
@@ -456,8 +480,9 @@ def p2():
             if find not in dealer_knows_which:
                 if 'Phone' in item_list_p2:
                     phone_p2()
+                    continue
                 
-            if not dealer_knows_current:
+            if not dealer_knows_current or dealer_knows_all:
                 if 'Beer' in item_list_p2:
                     beer_p2()
                 
@@ -465,12 +490,52 @@ def p2():
                     mag_p2()
                     
                     
-            if dealer_knows_current:
-                if shotgun[0] == 'Live':
+        if dealer_knows_current or dealer_knows_all:
+            if shotgun[0] == 'Live':
+                shotgun.pop(0)
+                if 'Saw' in item_list_p2:
+                    saw_p2()
+                    print('\nThe dealer points the shotgun at you.')
+                    w()
+                    print('*Boom*')
+                    w()
+                    print('You lose 2 health.')
+                    health -= 2
+                    if health < 0:
+                        health = 0
+                else:
+                    print('\nThe dealer points the shotgun at you.')
+                    w()
+                    print('\n*Boom*')
+                    w()
+                    print('\nYou lose 1 health.')
+                    w()
+                    health -= 1
+                    health -= 1
+                        
+            if shotgun[0] == 'Blank':
+                shotgun.pop(0)
+                if 'Inverter' in item_list_p2:
+                    inv_p2()
                     if 'Saw' in item_list_p2:
                         saw_p2()
-                        
-            
+                        print('\nThe dealer points the shotgun at you.')
+                        w()
+                        print('\n*Boom*')
+                        w()
+                        print('You lose 2 health.')
+                        health -= 2
+                        if health < 0:
+                            health = 0
+                    else:
+                        print('\nThe dealer points the shotgun at you.')
+                        w()
+                        print('\n*Boom*')
+                        w()
+                        print('\nYou lose 1 health.')
+                        health -= 1
+                
+                    
                         
         
 def get_items():
@@ -489,8 +554,9 @@ def get_items():
 get_items()
 get_health()
 
-
-p1()
+print(shotgun)
+turn = 2
+p2()
                 
 #When done with game, remove starting load_shotgun()
 #When done with game, remove secret debug option
