@@ -2,7 +2,7 @@ import time
 import random
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 shotgun = []
-def w:
+def w():
     time.sleep(2)
 
 item_count_p1 = 0
@@ -21,6 +21,20 @@ item_list_p2 = []
 item_list = ['Cigarettes', 'Magnifying Glass', 'Beer', 'Saw', 'Phone', 'Inverter', 'Handcuffs', 'Expired Medicine', 'Adrenaline'] #list of all items
 dealer_knows_current = False #The dealer in game uses logic 100% correct
 dealer_knows_which = []
+
+def dealer_knowledge():
+    global dealer_knows_which
+    global dealer_knows_current
+    dealer_index = 0
+    rem = 0
+    for i in dealer_knows_which:
+        dealer_knows_which[dealer_index] -= 1
+        if dealer_knows_which[dealer_index] == 0:
+            rem += 1
+            dealer_knows_current = True
+    for i in range(rem):
+        dealer_knows_which.remove(0)
+        
 
 def get_health():
     global health
@@ -173,7 +187,6 @@ def phone():
     
 def phone_p2(): 
     global item_count_p2
-    global shotgun
     global find
     print('\nThe Dealer decides to use his phone.')
     dealer_knows_which.append(find)
@@ -356,6 +369,7 @@ def p1():
                 time.sleep(2)
                 find = random.randint(1, len(shotgun) -1)
                 
+                
         elif ans == 'c':
             item_selection_p1 = True
             if item_count_p1 == 0:
@@ -433,13 +447,31 @@ def p2():
         if item_count_p2 != 0:
             if dealer_health != max_health:
                 if 'Cigarettes' not in item_list_p2:
-                    med_p2()
+                    if 'Expired Medicine' in item_list_p2:
+                        med_p2()
                     
                 elif 'Cigarettes' in item_list_p2:
                     cigs_p2()
                     
-            if dealer_knows_current
+            if find not in dealer_knows_which:
+                if 'Phone' in item_list_p2:
+                    phone_p2()
+                
+            if not dealer_knows_current:
+                if 'Beer' in item_list_p2:
+                    beer_p2()
+                
+                if 'Magnifying Glass' in item_list_p2:
+                    mag_p2()
+                    
+                    
+            if dealer_knows_current:
+                if shotgun[0] == 'Live':
+                    if 'Saw' in item_list_p2:
+                        saw_p2()
+                        
             
+                        
         
 def get_items():
     global item_count_p1, item_count_p2
@@ -456,9 +488,6 @@ def get_items():
         
 get_items()
 get_health()
-item_list_p1[0] = 'Expired Medicine'
-item_list_p1[1] = 'Expired Medicine'
-item_list_p1[2] = 'Expired Medicine'
 
 
 p1()
