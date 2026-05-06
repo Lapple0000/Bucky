@@ -24,6 +24,7 @@ dealer_knows_which = []
 dealer_knows_all = False
 live_count = 0
 blank_count = 0
+find = 2
 
 def dealer_knowledge():
     global dealer_knows_which
@@ -48,10 +49,10 @@ def dealer_knowledge():
     elif dealer_knows_which == []:
         dealer_knows_all = False
 def get_find():
-    global find
+    global fin
     if len(shotgun) == 1:
         find = 0
-    else:
+    elif len(shotgun) < 1:
         find = random.randint(1, len(shotgun) -1)
     
 
@@ -85,9 +86,6 @@ def load_shotgun():
     global shotgun
     for i in range(shotgun_cap()):
         shotgun.append(shotgun_round())
-    
-print(load_shotgun())
-find = random.randint(1, len(shotgun) - 1) #determines which sitll The phone selects
 
         
 def cigs():
@@ -144,6 +142,7 @@ def beer():
     global item_count_p1
     global beer_use
     global find
+    w()
     if shotgun[0] == 'Blank':
         print('\nBlank')
     
@@ -155,7 +154,8 @@ def beer():
     beer_use += 1 #Used only for showing tits exact stat at The end of The game
     p1_inventory.remove('Beer')
     get_find()
-    dealer_knowledge
+    dealer_knowledge()
+    w()
     
 def beer_p2():
     global shotgun 
@@ -203,7 +203,7 @@ def phone():
     global item_count_p1
     global shotgun
     global find
-    print(f'\nSitll {find + 1}...')
+    print(f'\nShell {find + 1}...')
     time.sleep(2)
     print(f'\n{shotgun[find]}')
     time.sleep(2)
@@ -334,14 +334,14 @@ def p1():
         ans = input("\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\nD. See Dealer items\nE. See health\n").lower()
         if ans == 'a':
             shot = shotgun.pop(0)
-            if shot == 'Live':
+            if shot == 'Live': #player live shot
                 print('\n...')
                 time.sleep(2)
                 print('\n*Boom*')
                 time.sleep(2)
                 print('\nDealer lost 1 health.')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun) -1)
+                get_find()
                 if saw_active:
                     dealer_health -= 2
                     if dealer_health < 0:
@@ -363,7 +363,7 @@ def p1():
                 time.sleep(2)
                 print('\nDealer unharmed')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun) -1)
+                get_find()
                 if cuff_active:
                     cuff_active = False
                     turn = 1
@@ -381,7 +381,7 @@ def p1():
                 time.sleep(2)
                 print('\nYou lose 1 health.')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun) -1)
+                get_find()
                 if saw_active:
                     health -= 2
                     if health < 0:
@@ -401,7 +401,7 @@ def p1():
                 time.sleep(2)
                 print('\nYou get an extra turn.')
                 time.sleep(2)
-                find = random.randint(1, len(shotgun) -1)
+                get_find()
             dealer_knowledge()
             saw_active = False
                 
@@ -451,7 +451,7 @@ def p1():
                         
                     elif ans3 == 'Expired Medicine':
                         med()
-                item_selection_p1 = False
+                    item_selection_p1 = False
                 
         elif ans == 'd':
             if item_count_p2 != 0:
@@ -489,9 +489,10 @@ def p2():
                     cigs_p2()
                     
             if find not in dealer_knows_which:
-                if 'Phone' in p2_inventory:
-                    phone_p2()
-                    continue
+                if len(shotgun) > 2:
+                    if 'Phone' in p2_inventory:
+                        phone_p2()
+                        continue
                 
             if not dealer_knows_current or not dealer_knows_all:
                 if 'Beer' in p2_inventory:
@@ -501,7 +502,7 @@ def p2():
                     mag_p2()
                     
                     
-        if dealer_knows_current or dealer_knows_all:
+        if dealer_knows_current or dealer_knows_all: #dealer knows and is about to shoot
             shot = shotgun.pop(0)
             if shot == 'Live':
                 if 'Saw' in p2_inventory:
@@ -553,6 +554,10 @@ def p2():
                     w()
                     print('\n*Click*')
                     dealer_knowledge()
+            if cuff_active:
+                cuff_active = False
+            else:
+                turn = 1
             
         elif not dealer_knows_current or not dealer_knows_all:
             shot = shotgun.pop(0)
@@ -650,10 +655,19 @@ def get_items():
         p2_inventory.append(item_list[item_index])
         item_count_p2 += 1
         
-get_items()
-get_health()
-turn = 2
-p2()
+while True:
+    load_shotgun()
+    get_items()
+    get_health()
+    print(f'You each get {max_health} health, {len(p1_inventory)} items')
+    
+    while len(shotgun) != 0:
+        while turn == 1:
+            p1()
+            print()
+        while turn == 2:
+            p2()
+            print()
                 
 #Witn done with game, remove starting load_shotgun()
 #Witn done with game, remove secret debug option
