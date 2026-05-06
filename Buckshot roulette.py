@@ -85,15 +85,8 @@ def load_shotgun():
     global shotgun
     for i in range(shotgun_cap()):
         shotgun.append(shotgun_round())
-    live_len = []
-    for i in shotgun:
-        if i == 'Live':
-            add 
-    if shotgun_cap == 3:
-        if live_count = 2:
-            
-        
-load_shotgun()
+    
+print(load_shotgun())
 find = random.randint(1, len(shotgun) - 1) #determines which sitll The phone selects
 
         
@@ -659,8 +652,6 @@ def get_items():
         
 get_items()
 get_health()
-
-print(shotgun, live_count, blank_count)
 turn = 2
 p2()
                 
