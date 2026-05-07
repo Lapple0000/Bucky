@@ -49,7 +49,7 @@ def dealer_knowledge():
     elif dealer_knows_which == []:
         dealer_knows_all = False
 def get_find():
-    global fin
+    global find
     if len(shotgun) == 1:
         find = 0
     elif len(shotgun) < 1:
@@ -331,7 +331,7 @@ def med_p2():
 def p1():
     global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, p1_inventory, find
     while turn == 1:
-        ans = input("\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\nD. See Dealer items\nE. See health\n").lower()
+        ans = input("\n\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\nD. See Dealer items\nE. See health\n\n\n").lower()
         if ans == 'a':
             shot = shotgun.pop(0)
             if shot == 'Live': #player live shot
@@ -339,20 +339,20 @@ def p1():
                 time.sleep(2)
                 print('\n*Boom*')
                 time.sleep(2)
-                print('\nDealer lost 1 health.')
-                time.sleep(2)
                 get_find()
                 if saw_active:
+                    print('\nDealer lost 2 health.')
                     dealer_health -= 2
                     if dealer_health < 0:
                         dealer_health = 0
                         
                 else:
                     dealer_health -= 1
+                    print('\nDealer lost 1 health.')
+                w()
                 if cuff_active:
                     turn = 1
-                    cuff_active = False
-                    
+                    cuff_active = False   
                 else:
                     turn = 2
                 
@@ -654,13 +654,24 @@ def get_items():
         item_index = random.randint(0,8)
         p2_inventory.append(item_list[item_index])
         item_count_p2 += 1
-        
+input('I will not explain the rules. You should already know how this goes.\n\nPut any input.\n')
+w()
+print()
 while True:
+    
     load_shotgun()
     get_items()
     get_health()
-    print(f'You each get {max_health} health, {len(p1_inventory)} items')
-    
+    print(f'You each get {max_health} health and {len(p1_inventory)} items')
+    w()
+    input('\nInsert any input to collect your item\n')
+    inv_index = 0
+    print()
+    for i in p1_inventory:
+        print(f'Item {inv_index + 1}: {p1_inventory[inv_index]}')
+        input()
+        inv_index += 1
+        
     while len(shotgun) != 0:
         while turn == 1:
             p1()
@@ -668,6 +679,7 @@ while True:
         while turn == 2:
             p2()
             print()
+    
                 
 #Witn done with game, remove starting load_shotgun()
 #Witn done with game, remove secret debug option
