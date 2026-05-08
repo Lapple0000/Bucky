@@ -94,7 +94,7 @@ def cigs():
     global max_health 
     if health < max_health:
         health += 1
-        time.sleep(2)
+        w()
         print(f'\n{health} health.')
     else:
         print("\nAlready full health. You wasted an item")
@@ -116,14 +116,14 @@ def mag():
     global shotgun
     global item_count_p1
     if shotgun[0] == 'Blank':
-        time.sleep(2)
+        w()
         print("\nBlank")
-        time.sleep(2)
+        w()
         
     elif shotgun[0] == 'Live':
-        time.sleep(2)
+        w()
         print('\nLive')
-        time.sleep(2)
+        w()
     
     item_count_p1 -= 1
     p1_inventory.remove('Magnifying Glass')
@@ -178,7 +178,7 @@ def beer_p2():
 def saw():
     global saw_active 
     global item_count_p1
-    time.sleep(2)
+    w()
     if not saw_active:
         item_count_p1 -= 1
         saw_active = True
@@ -187,7 +187,7 @@ def saw():
         print('\nYou sawed off the shotgun. Double damage.')
     else:
         print('\nYou already used a saw. Nothing Happens')
-    time.sleep(2)
+    w()
     
 def saw_p2():
     global saw_active 
@@ -197,16 +197,16 @@ def saw_p2():
         saw_active = True
         p2_inventory.remove('Saw')
         print('\nThe Dealer sawed off the shotgun. Double damage.')
-    time.sleep(2)
+    w()
     
 def phone(): 
     global item_count_p1
     global shotgun
     global find
     print(f'\nShell {find + 1}...')
-    time.sleep(2)
+    w()
     print(f'\n{shotgun[find]}')
-    time.sleep(2)
+    w()
     
     item_count_p1 -= 1
     p1_inventory.remove('Phone')
@@ -223,14 +223,14 @@ def phone_p2():
 def inv(): 
     global item_count_p1
     global shotgun
-    time.sleep(2)
+    w()
     if shotgun[0] == 'Blank':
         shotgun[0] = 'Live'
         
     elif shotgun[0] == 'Live':
         shotgun[0] = 'Blank'
     print('\nInverted')
-    time.sleep(2)
+    w()
     
     item_count_p1 -= 1
     p1_inventory.remove('Inverter')
@@ -241,14 +241,14 @@ def inv_p2():
     global shotgun
     w()
     print('\nThe Dealer decides to use its inverter.')
-    time.sleep(2)
+    w()
     if shotgun[0] == 'Blank':
         shotgun[0] = 'Live'
         
     elif shotgun[0] == 'Live':
         shotgun[0] = 'Blank'
     print('\nInverted')
-    time.sleep(2)
+    w()
     
     item_count_p2 -= 1
     p2_inventory.remove('Inverter')
@@ -261,11 +261,11 @@ def cuff():
         item_count_p1 -= 1
         
         p1_inventory.remove('Handcuffs')
-        print('\nThe Dealer takes The handcuffs and cuffs itself.')
-        time.sleep(2)
+        print('\nThe Dealer takes the handcuffs and cuffs itself.')
+        w()
     else:
         print('\nThe Dealer already has handcuffs on. Nothing happens')
-        time.sleep(2)
+        w()
         
 def cuff_p2():
     global cuff_active_p2
@@ -274,7 +274,7 @@ def cuff_p2():
     item_count_p2 -= 1    
     p1_inventory.remove('Handcuffs')
     print('\nThe Dealer cuffs you to The table.')
-    time.sleep(2)
+    w()
         
 def med():
     global health
@@ -282,7 +282,7 @@ def med():
     global item_count_p1 
     chance = random.randint(1, 99)
     print('\nYou swallow The pill.')
-    time.sleep(2)
+    w()
     if chance % 2 == 0:
         health -= 1
         print('\nUnlucky. Lost 1 health.')
@@ -299,7 +299,7 @@ def med():
         else:
             health += 2
             print('\nGained 2 health.')
-    time.sleep(2)
+    w()
     item_count_p1 -= 1
     
     p1_inventory.remove('Expired Medicine')
@@ -310,7 +310,7 @@ def med_p2():
     global item_count_p2 
     chance = random.randint(1, 99)
     print('\nThe Dealer takes expired medicine.')
-    time.sleep(2)
+    w()
     if chance % 2 == 0:
         health -= 1
         print('\nThe Dealer lost 1 health.')
@@ -323,7 +323,7 @@ def med_p2():
         else:
             dealer_health += 2
             print('\nThe Dealer gained 2 health.')
-    time.sleep(2)
+    w()
     item_count_p2 -= 1
     
     p2_inventory.remove('Expired Medicine')
@@ -336,9 +336,9 @@ def p1():
             shot = shotgun.pop(0)
             if shot == 'Live': #player live shot
                 print('\n...')
-                time.sleep(2)
+                w()
                 print('\n*Boom*')
-                time.sleep(2)
+                w()
                 get_find()
                 if saw_active:
                     print('\nDealer lost 2 health.')
@@ -351,22 +351,27 @@ def p1():
                     print('\nDealer lost 1 health.')
                 w()
                 if cuff_active:
-                    turn = 1
-                    cuff_active = False   
+                    if shotgun == []:
+                        turn = 0
+                    else:
+                        cuff_active = False   
                 else:
                     turn = 2
                 
             elif shot == 'Blank':
                 print('\n...')
-                time.sleep(2)
+                w()
                 print("\n*Click*")
-                time.sleep(2)
+                w()
                 print('\nDealer unharmed')
-                time.sleep(2)
+                w()
                 get_find()
                 if cuff_active:
-                    cuff_active = False
-                    turn = 1
+                    if shotgun == []:
+                        turn = 0
+                    else:
+                        cuff_active = False
+                        turn = 1
                     
                 else:
                     turn = 2
@@ -376,11 +381,11 @@ def p1():
             shot = shotgun.pop(0)
             if shot == 'Live':
                 print('\n...')
-                time.sleep(2)
+                w()
                 print("\n*Boom*")
-                time.sleep(2)
+                w()
                 print('\nYou lose 1 health.')
-                time.sleep(2)
+                w()
                 get_find()
                 if saw_active:
                     health -= 2
@@ -389,18 +394,21 @@ def p1():
                 else:
                     health -=1
                 if cuff_active:
-                    turn = 1
-                    cuff_active = false
+                    if shotgun == []:
+                        turn = 0
+                    else:
+                        turn = 1
+                        cuff_active = false
                 else:
                     turn = 2
                 
             elif shot == 'Blank':
                 print('\n...')
-                time.sleep(2)
+                w()
                 print('\n*Click*')
-                time.sleep(2)
+                w()
                 print('\nYou get an extra turn.')
-                time.sleep(2)
+                w()
                 get_find()
             dealer_knowledge()
             saw_active = False
@@ -410,66 +418,66 @@ def p1():
             if item_count_p1 == 0:
                     print('\nYou have no items')
                     item_selection_p1 = False
-                    time.sleep(2)
+                    w()
             else:
                 print("\n\nPick your item\n\n")
-            while item_selection_p1:
-                time.sleep(2)
-                letter_index = 0
-                for i in p1_inventory:
-                    print(f'{letters[letter_index]}. {i}')
-                    letter_index += 1
-                max_letters = letters[0:letter_index]
-                ans2 = input().upper()
-                if ans2 not in max_letters:
-                    print('\nNot an item choice\n')
-                    
-                elif ans2 in max_letters:
-                    ans2 = max_letters.index(ans2)
-                    ans3 = p1_inventory[ans2]
-                    
-                    if ans3 == 'Cigarettes':
-                        cigs()
+                while item_selection_p1:
+                    w()
+                    letter_index = 0
+                    for i in p1_inventory:
+                        print(f'{letters[letter_index]}. {i}')
+                        letter_index += 1
+                    max_letters = letters[0:letter_index]
+                    ans2 = input().upper()
+                    if ans2 not in max_letters:
+                        print('\nNot an item choice\n')
                         
-                    elif ans3 == 'Beer':
-                        beer()
+                    elif ans2 in max_letters:
+                        ans2 = max_letters.index(ans2)
+                        ans3 = p1_inventory[ans2]
                         
-                    elif ans3 == 'Phone':
-                        phone()
-                        
-                    elif ans3 == "Handcuffs":
-                        cuff()
-                        
-                    elif ans3 == "Magnifying Glass":
-                        mag()
-                        
-                    elif ans3 == 'Inverter':
-                        inv()
-                        
-                    elif ans3 == 'Saw':
-                        saw()
-                        
-                    elif ans3 == 'Expired Medicine':
-                        med()
-                    item_selection_p1 = False
+                        if ans3 == 'Cigarettes':
+                            cigs()
+                            
+                        elif ans3 == 'Beer':
+                            beer()
+                            
+                        elif ans3 == 'Phone':
+                            phone()
+                            
+                        elif ans3 == "Handcuffs":
+                            cuff()
+                            
+                        elif ans3 == "Magnifying Glass":
+                            mag()
+                            
+                        elif ans3 == 'Inverter':
+                            inv()
+                            
+                        elif ans3 == 'Saw':
+                            saw()
+                            
+                        elif ans3 == 'Expired Medicine':
+                            med()
+                        item_selection_p1 = False
                 
         elif ans == 'd':
             if item_count_p2 != 0:
                 print('\nThe Dealer has\n')
-                time.sleep(2)
+                w()
                 for i in p2_inventory:
                     print(i)
             else:
                 print("\nThe Dealer doesn't have any items.")
-            time.sleep(2)
+            w()
             print()
             
         elif ans == 'e':
-            time.sleep(2)
+            w()
             print(f'\nThe Dealer has {dealer_health} health.')
-            time.sleep(2)
+            w()
             print(f'\nYou have {health} health.')
-            time.sleep(2)
+            w()
             
         elif ans == 'debug':
             print(shotgun)
@@ -478,7 +486,7 @@ def p1():
 def p2():
     global item_count_p1, health, cuff_active_p2, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
     while turn == 2:
-        time.sleep(2)
+        w()
         if item_count_p2 != 0:
             if dealer_health != max_health:
                 if 'Cigarettes' not in p2_inventory:
@@ -555,7 +563,10 @@ def p2():
                     print('\n*Click*')
                     dealer_knowledge()
             if cuff_active:
-                cuff_active = False
+                if shotgun == []:
+                    turn = 0
+                else:
+                    cuff_active = False
             else:
                 turn = 1
             
@@ -588,7 +599,13 @@ def p2():
                         print('\nYou lose 1 health.')
                         health -= 1
                     if cuff_active_p2:
-                        cuff_active_p2 = False
+                        if shotgun == []:
+                            turn = 0
+                        else:
+                            if shotgun == []:
+                                turn = 0
+                            else:
+                                cuff_active_p2 = False
                     else:
                         turn = 1
                     w()
@@ -608,7 +625,10 @@ def p2():
                         print('\nThe Dealer loses 1 health.')
                         dealer_health -= 1
                     if cuff_active_p2:
-                        cuff_active_p2 = False
+                        if shotgun == []:
+                            turn = 0
+                        else:
+                            cuff_active_p2 = False
                     else:
                         turn = 1
                 elif shot == 'Blank':
@@ -633,7 +653,10 @@ def p2():
                             print('\nThe Dealer loses 1 health.')
                             dealer_health -= 1
                         if cuff_active_p2:
-                            cuff_active_p2 = False
+                            if shotgun == []:
+                                turn = 0
+                            else:
+                                cuff_active_p2 = False
                         else:
                             turn = 1
                     elif shot == 'Blank':
@@ -656,51 +679,64 @@ def get_items():
         item_count_p2 += 1
 first_time = True
 input('I will not explain the rules. You should already know how this goes.\n\nInsert any input.\n')
-w()
-print()
 
 while True:
     w()
     turn = 1
     load_shotgun()
+    cuff_active
+    cuff_active_2
     shotgun = ['Live']
+    item_obtain_1 = len(p1_inventory)
     if first_time:
         get_items()
         get_health()
         print(f'You each get {max_health} health and {len(p1_inventory)} items')
         w()
+        first_time = False
     elif not first_time:
         get_items()
         get_health()
     input('\nInsert any input to collect your item\n')
-    inv_index = 0
+    inv_index = item_obtain_1
+    inventory_list = 0
     print()
     for i in p1_inventory:
-        if len(p1_inventory) == 8:
-            print ('\nShame...')
-            w()
-            print('\nToo many items')
+        if inv_index > 7:
             break
         print(f'Item {inv_index + 1}: {p1_inventory[inv_index]}')
         input()
         inv_index += 1
+        inventory_list += 1
+        
+    if len(p2_inventory) > 8:
+        del p2_inventory[7:-1]
+        item_count_2 = 8
+        
+    if len(p1_inventory) > 8:
+        del p1_inventory[7:-1]
+        print(p1_inventory)
+        item_count_p1 = 8
+        
         
     while len(shotgun) != 0:
         while turn == 1:
             if shotgun == []:
                 break
             print('\nYour turn\n\n')
+            w()
             p1()
             print()
         while turn == 2:
             if shotgun == []:
                 break
             print("\nDealer's turn\n\n")
+            w()
             p2()
             print()
             if shotgun == []:
                 break
     
                 
-#Witn done with game, remove starting load_shotgun()
-#Witn done with game, remove secret debug option
+
+#When done with game, remove secret debug option
