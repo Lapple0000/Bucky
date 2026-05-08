@@ -52,7 +52,7 @@ def get_find():
     global find
     if len(shotgun) == 1:
         find = 0
-    elif len(shotgun) < 1:
+    elif len(shotgun) > 1:
         find = random.randint(1, len(shotgun) -1)
     
 
@@ -239,7 +239,7 @@ def inv_p2():
     global item_count_p2
     global p2_inventory
     global shotgun
-    
+    w()
     print('\nThe Dealer decides to use its inverter.')
     time.sleep(2)
     if shotgun[0] == 'Blank':
@@ -654,31 +654,52 @@ def get_items():
         item_index = random.randint(0,8)
         p2_inventory.append(item_list[item_index])
         item_count_p2 += 1
-input('I will not explain the rules. You should already know how this goes.\n\nPut any input.\n')
+first_time = True
+input('I will not explain the rules. You should already know how this goes.\n\nInsert any input.\n')
 w()
 print()
+
 while True:
-    
-    load_shotgun()
-    get_items()
-    get_health()
-    print(f'You each get {max_health} health and {len(p1_inventory)} items')
     w()
+    turn = 1
+    load_shotgun()
+    shotgun = ['Live']
+    if first_time:
+        get_items()
+        get_health()
+        print(f'You each get {max_health} health and {len(p1_inventory)} items')
+        w()
+    elif not first_time:
+        get_items()
+        get_health()
     input('\nInsert any input to collect your item\n')
     inv_index = 0
     print()
     for i in p1_inventory:
+        if len(p1_inventory) == 8:
+            print ('\nShame...')
+            w()
+            print('\nToo many items')
+            break
         print(f'Item {inv_index + 1}: {p1_inventory[inv_index]}')
         input()
         inv_index += 1
         
     while len(shotgun) != 0:
         while turn == 1:
+            if shotgun == []:
+                break
+            print('\nYour turn\n\n')
             p1()
             print()
         while turn == 2:
+            if shotgun == []:
+                break
+            print("\nDealer's turn\n\n")
             p2()
             print()
+            if shotgun == []:
+                break
     
                 
 #Witn done with game, remove starting load_shotgun()
