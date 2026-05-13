@@ -24,7 +24,7 @@ dealer_knows_which = []
 dealer_knows_all = False
 live_count = 0
 blank_count = 0
-find = 2
+find = 1
 
 def dealer_knowledge():
     global dealer_knows_which
@@ -81,12 +81,13 @@ def shotgun_cap():
     
 
 def load_shotgun():
+    
     global shotgun_cap, live_count, blank_count
     global shotgun_round
     global shotgun
     for i in range(shotgun_cap()):
         shotgun.append(shotgun_round())
-
+    
         
 def cigs():
     global item_count_p1
@@ -141,7 +142,7 @@ def beer():
     global shotgun 
     global item_count_p1
     global beer_use
-    global find
+    global find, turn
     w()
     if shotgun[0] == 'Blank':
         print('\nBlank')
@@ -156,6 +157,8 @@ def beer():
     get_find()
     dealer_knowledge()
     w()
+    if len(shotgun) == 0:
+        turn = 0
     
 def beer_p2():
     global shotgun 
@@ -203,9 +206,15 @@ def phone():
     global item_count_p1
     global shotgun
     global find
-    print(f'\nShell {find + 1}...')
     w()
-    print(f'\n{shotgun[find]}')
+    if len(shotgun) == 1:
+        print('\nHell no')
+    elif len(shotgun) == 2:
+        print('\nTake a guess')
+    elif len(shotgun) > 2:
+        print(f'\nShell {find + 1}...')
+        w()
+        print(f'\n{shotgun[find]}')
     w()
     
     item_count_p1 -= 1
@@ -680,13 +689,24 @@ def get_items():
 first_time = True
 input('I will not explain the rules. You should already know how this goes.\n\nInsert any input.\n')
 
-while True:
+while first_time or (dealer_health and health) > 0:
+    blank_count = 0
+    live_count = 0
     w()
     turn = 1
     load_shotgun()
-    cuff_active
-    cuff_active_2
-    shotgun = ['Live']
+    
+    if blank_count == 1:
+        print ('\n1 Blank\n')
+    elif blank_count != 1:
+        print(f'\n{blank_count} Blanks\n')
+    if live_count == 1:
+        print('1 Live\n\n')
+    elif live_count != 1:
+        print(f'{live_count} Lives\n\n')
+    w()
+    cuff_active = False
+    cuff_active_p2 = False
     item_obtain_1 = len(p1_inventory)
     if first_time:
         get_items()
@@ -715,7 +735,6 @@ while True:
         
     if len(p1_inventory) > 8:
         del p1_inventory[7:-1]
-        print(p1_inventory)
         item_count_p1 = 8
         
         
@@ -740,3 +759,4 @@ while True:
                 
 
 #When done with game, remove secret debug option
+#Fix Dealer not knowing that the shotgun is empty
