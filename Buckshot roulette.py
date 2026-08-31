@@ -10,6 +10,7 @@ item_count_p2 = 0
 
 saw_active = False
 playing = True
+
 beer_use = 0
 health = 0
 max_health = 0
@@ -702,6 +703,7 @@ input('I will not explain the rules. You should already know how this goes.\n\nI
 while playing:
     while dead:
         if p1_death:
+            p1_inventory = []
             print('\n'*67)
             w()
             print ('\nYou have died. Would you like to play again?\n')
@@ -711,17 +713,18 @@ while playing:
                 w()
                 print('\nSee you soon...\n')
                 w()
-                playing = False
-                dead = False
+                quit('Shhh, secret quit message')
             elif play_again == "Y":
                 w()
                 print("\nWell, let's get back to it...\n")
                 w()
                 print('\nShall we?\n')
                 w()
+                print('\n' * 67)
                 dead = False
+                print("Let's do this again.")
                 p1_death = False
-    while first_time or (dealer_health and health) > 0:
+    while (first_time or (dealer_health and health) > 0) or dead == False:
         blank_count = 0
         live_count = 0
         w()
@@ -805,7 +808,7 @@ while playing:
                 break
                     
 
-#When done with game, remove secret debug option
+#When done with game, remove secret debug and 1 shot option
 #Code what happens after someone dies
 #Code adrenaline
 #dealer used a beer even though the entire shotgun was live
