@@ -746,7 +746,21 @@ while playing:
             w()
             w()
             play_again = input('I guess you could put your life on the line again. ¯\_(ツ)_/¯\n\nY or N\n').lower()
-            
+            if play_again == 'y':
+                w()
+                print("\nWell, let's get back to it...\n")
+                w()
+                print('\nShall we?\n')
+                w()
+                print('\n' * 67)
+                dead = False
+                print("Let's do this again.")
+                p2_death = False
+            elif play_again == 'n':
+                w()
+                print('\nSee you soon...\n')
+                w()
+                quit('Shhh, secret quit message')
     while (first_time or (dealer_health and health) > 0) or dead == False:
         blank_count = 0
         live_count = 0
