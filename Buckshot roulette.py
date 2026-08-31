@@ -9,10 +9,12 @@ item_count_p1 = 0
 item_count_p2 = 0
 
 saw_active = False
+playing = True
 beer_use = 0
 health = 0
 max_health = 0
 dealer_health = 0
+dead = False
 turn = 1
 cuff_active = False
 cuff_active_p2 = False
@@ -490,6 +492,11 @@ def p1():
             
         elif ans == 'debug':
             print(shotgun)
+        
+        elif ans == '1 shot':
+            dealer_health = 1
+            health = 1
+            print('\nThe dealer says "Man fuck you"')
 
     
 def p2():
@@ -692,8 +699,28 @@ def get_items():
 first_time = True
 input('I will not explain the rules. You should already know how this goes.\n\nInsert any input.\n')
 
-while True:
-    while dead
+while playing:
+    while dead:
+        if p1_death:
+            print('\n'*67)
+            w()
+            print ('\nYou have died. Would you like to play again?\n')
+            w()
+            play_again = input('\nY or N\n').upper()
+            if play_again == 'N':
+                w()
+                print('\nSee you soon...\n')
+                w()
+                playing = False
+                dead = False
+            elif play_again == "Y":
+                w()
+                print("\nWell, let's get back to it...\n")
+                w()
+                print('\nShall we?\n')
+                w()
+                dead = False
+                p1_death = False
     while first_time or (dealer_health and health) > 0:
         blank_count = 0
         live_count = 0
@@ -753,6 +780,11 @@ while True:
                 print()
             if health == 0 or dealer_health == 0:
                 dead = True
+                if health == 0:
+                    p1_death = True
+                elif dealer_health == 0:
+                    p2_death = True
+                turn = 0
                 break
             while turn == 2:
                 if shotgun == []:
@@ -765,9 +797,16 @@ while True:
                     break
             if health == 0 or dealer_health == 0:
                 dead = True
+                if health == 0:
+                    p1_death = True
+                elif dealer_health == 0:
+                    p2_death = True
+                turn = 0
                 break
                     
 
 #When done with game, remove secret debug option
 #Code what happens after someone dies
 #Code adrenaline
+#dealer used a beer even though the entire shotgun was live
+#GOD FUCKING DAMN IT, IT STILL TRIES TO .pop FROM AN EMPTY SHOTGUN
