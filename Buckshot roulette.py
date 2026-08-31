@@ -17,6 +17,8 @@ max_health = 0
 dealer_health = 0
 dead = False
 turn = 1
+p1_death = False
+p2_death = False
 cuff_active = False
 cuff_active_p2 = False
 p1_inventory = [] #list of items you have
@@ -698,12 +700,16 @@ def get_items():
         p2_inventory.append(item_list[item_index])
         item_count_p2 += 1
 first_time = True
-input('I will not explain the rules. You should already know how this goes.\n\nInsert any input.\n')
+input('I will not explain the rules. You should already know how this goes.\n\n\nEnter your name:\n')
+w()
+print("\nJust kidding, don't care.\n\n\n\n\n\n")
+w()
 
 while playing:
     while dead:
+        p1_inventory = []
+        p2_inventory = []
         if p1_death:
-            p1_inventory = []
             print('\n'*67)
             w()
             print ('\nYou have died. Would you like to play again?\n')
@@ -724,6 +730,23 @@ while playing:
                 dead = False
                 print("Let's do this again.")
                 p1_death = False
+        elif p2_death:
+            print('\n' * 67)
+            w()
+            print('You have won. Congratulations.')
+            w()
+            w()
+            print('\n...\n')
+            w()
+            w()
+            print('What? You want money?\n')
+            w()
+            w()
+            print('Buddy, our god is too lazy to code that.\n')
+            w()
+            w()
+            play_again = input('I guess you could put your life on the line again. ¯\_(ツ)_/¯\n\nY or N\n').lower()
+            
     while (first_time or (dealer_health and health) > 0) or dead == False:
         blank_count = 0
         live_count = 0
@@ -752,7 +775,7 @@ while playing:
         elif not first_time:
             get_items()
             get_health()
-        input('\nInsert any input to collect your item\n')
+        input('\nInsert any input to collect your item.\n')
         inv_index = item_obtain_1
         inventory_list = 0
         print()
