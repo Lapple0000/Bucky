@@ -1,10 +1,10 @@
 import time
 import random
+import shotgun_possibilities
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 shotgun = []
 def w():
     time.sleep(2)
-
 item_count_p1 = 0
 item_count_p2 = 0
 
@@ -846,7 +846,7 @@ while playing:
                     
 
 #When done with game, remove secret debug and 1 shot option
-#Code what happens after someone dies
+#Code a new method for shotgun randomization
 #Code adrenaline
 #dealer used a beer even though the entire shotgun was live
 #GOD FUCKING DAMN IT, IT STILL TRIES TO .pop FROM AN EMPTY SHOTGUN
