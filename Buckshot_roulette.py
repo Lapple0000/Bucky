@@ -1,852 +1,556 @@
+#When coding the dealer, make sure he doesn't use the magnifying glass when he already knows the current shell or shotgun[0]
+'''
+beer--
+magnifying glass--
+saw--
+cuffs--
+cigs--
+adrenaline--
+inverter--
+phone--
+medicine--
+'''
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 import time
 import random
 import shotgun_possibilities
-letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-shotgun = []
+
 def w():
     time.sleep(2)
-item_count_p1 = 0
-item_count_p2 = 0
+'''shotgun = []
+def load_shotgun(): #permenant assignment
+    global shotgun
+    shotgun = shotgun_possibilities.load_shotgun()
+load_shotgun() #temporary''' #temporary disable
 
-saw_active = False
-playing = True
 
-beer_use = 0
-health = 0
+def p_item_removal(item):
+    #if item not in p_inventory:
+     #   quit('Something went wrong, tried to use item thats not in inventory.')
+    for i in range(len(p_inventory)):
+        if p_inventory[i] == item:
+            p_inventory.pop(i)
+            break
+        
+def d_item_removal(item):
+    #if item not in d_inventory:
+     #   quit('Something went wrong, tried to use item thats not in inventory.')
+    for i in range(len(d_inventory)):
+        if d_inventory[i] == item:
+            d_inventory.pop(i)
+            break
+l = 'Live'
+b = 'Blank'
+d_knows_all = False
+d_knows_current = False
+item_list = ['Burner Phone', "Magnifying Glass", "Handcuffs", "Inverter", 'Can of Beer', 'Saw', 'Pack of Cigarettes', 'Expired Medicine Tablet', 'Adrenaline']
+d_inventory = ['Burner Phone', "Magnifying Glass", "Handcuffs", "Inverter", 'Can of Beer', 'Pack of Cigarettes', 'Expired Medicine Tablet', 'Adrenaline']
+p_inventory = ['Burner Phone', "Magnifying Glass", "Handcuffs", "Inverter", 'Can of Beer', 'Pack of Cigarettes', 'Expired Medicine Tablet', 'Adrenaline']
+d_adr_inventory = []
+def adr_inventory():
+    global d_adr_inventory, d_inventory, p_inventory
+    for i in d_inventory:
+        d_adr_inventory.append(i)
+    for i in p_inventory:
+        d_adr_inventory.append(i)
+p_health = 0
+d_health = 0
 max_health = 0
-dealer_health = 0
-dead = False
-turn = 1
-p1_death = False
-p2_death = False
-cuff_active = False
-cuff_active_p2 = False
-p1_inventory = [] #list of items you have
-p2_inventory = []
-item_list = ['Cigarettes', 'Magnifying Glass', 'Beer', 'Saw', 'Phone', 'Inverter', 'Handcuffs', 'Expired Medicine', 'Adrenaline'] #list of all items
-dealer_knows_current = False #The Dealer in game uses logic 100% correct
-dealer_knows_which = []
-dealer_knows_all = False
-live_count = 0
-blank_count = 0
-find = 1
-
-def dealer_knowledge():
-    global dealer_knows_which
-    global dealer_knows_current
-    global dealer_knows_all
-    dealer_index = 0
-    reme = 0
-    for i in dealer_knows_which:
-        dealer_knows_which[dealer_index] -= 1
-        dealer_index += 1
-    if dealer_knows_which != []:
-        if dealer_knows_which[0] == 0:
-            dealer_knows_current = True
-            del dealer_knows_which[0]
-            dealer_not_know = shotgun
-            for i in dealer_knows_which:
-                del dealer_not_know[i]
-            if 'Blank' not in dealer_not_know:
-                dealer_knows_all = True
-            elif 'Live' not in dealer_not_know:
-                dealer_knows_all = True
-    elif dealer_knows_which == []:
-        dealer_knows_all = False
-def get_find():
-    global find
-    if len(shotgun) == 1:
-        find = 0
-    elif len(shotgun) > 1:
-        find = random.randint(1, len(shotgun) -1)
-    
+d_cuff_active = False
+p_cuff_active = False
+saw_active = False
+turn = 0 # 1 is player, 2 is dealer
 
 def get_health():
-    global health
-    global max_health
-    global dealer_health
-    health = random.randint(2,6)
-    max_health = health
-    dealer_health = health
+    global p_health, d_health, max_health
+    max_health = (random.randint(0, 5000) % 5) + 2
+    d_health = max_health
+    p_health = max_health
+    
+#this is gonna fucking suck. Coding dealer prediction bullshit
+d_knows = []
+l_amt = 0
+b_amt = 0
 
-def shotgun_round():
-    global live_count
-    global blank_count
-    round1 = random.randint(1,99)
-    if round1 % 2 == 0 :
-        blank_count += 1
-        return "Blank"
-    elif round1 % 2 != 0:
-        live_count += 1
-        return "Live"
-    
-def shotgun_cap():
-    cap = random.randint(3,8)
-    return cap
-    
-
-def load_shotgun():
-    
-    global shotgun_cap, live_count, blank_count
-    global shotgun_round
-    global shotgun
-    for i in range(shotgun_cap()):
-        shotgun.append(shotgun_round())
-    
-        
-def cigs():
-    global item_count_p1
-    global health
-    global max_health 
-    if health < max_health:
-        health += 1
-        w()
-        print(f'\n{health} health.')
+def d_all():
+    global d_knows_all, d_knows_current, l_amt, b_amt
+    b_amt = 0
+    l_amt = 0
+    d_knows_polarity = []
+    for i in shotgun:
+        if i == l:
+            l_amt += 1
+        elif i == b:
+            b_amt += 1
+    for i in d_knows:
+        if not d_knows == []:
+            d_knows_polarity.append(shotgun[i])
+    if d_knows_polarity.count(l) == l_amt:
+        d_knows_all = True
+    elif d_knows_polarity.count(b) == b_amt:
+        d_knows_all = True
     else:
-        print("\nAlready full health. You wasted an item")
+        d_knows_all = False
+    d_knows.sort()
+    if 0 in d_knows:
+        d_knows_current = True
+    elif d_knows_all:
+        d_knows_current = True
+    else:
+        d_knows_current = False
+
+def d_knowledge():
+    global d_knows
+    for i in d_knows:
+        d_knows[d_knows.index(i)] -= 1
+#         print(i)
+    d_knows.sort()
+    if not d_knows == []:
+        if d_knows[0] == -1:
+            del d_knows[0]
+    d_all()
+            
+    
+shotgun = [b, l, l, b, b] #temporary
+
+def p_magnify():
+    print('You smash the magnifying glass and look in the chamber...\n')
+    w()
+    print('Current shell: ' + shotgun[0] + '\n')
+    w()
+    p_item_removal('Magnifying Glass')
+    
+def d_magnify():
+    global d_knows, d_knows_current
+    d_knows.append(0)
+    d_knows.sort()
+    d_knows_current = True
+    print('The Dealer smashes a magnifying glass and looks in the chamber.\n')
+    w()
+    print('[The Dealer]: Very interesting...\n')
+    w()
+    d_item_removal('Magnifying Glass')
+    d_all()
         
-    item_count_p1 -= 1
-    p1_inventory.remove('Cigarettes')
-    
-def cigs_p2():
-    global item_count_p2
-    global dealer_health
-    print('\nThe Dealer decides to smoke a cigarette.')
-    dealer_health += 1
-    item_count_p2 -= 1
-    p2_inventory.remove('Cigarettes')
-    print(f'\nDealer now at {dealer_health} health')
+def p_beer():
+    print('You shotgun a can of beer....\n') #Pun intended
     w()
+    print(f'You eject the shell, it was {shotgun.pop(0)}.\n')
+    w()
+    p_item_removal('Can of Beer')
     
-def mag():
-    global shotgun
-    global item_count_p1
-    if shotgun[0] == 'Blank':
-        w()
-        print("\nBlank")
+def d_beer():
+    print('The Dealer chugs a can of beer....\n') #Pun intended
+    w()
+    print(f'The Dealer ejects the shell, it was {shotgun.pop(0)}.\n')
+    w()
+    d_item_removal('Can of Beer')
+    d_knowledge()
+    
+def p_inverter():
+    print('You use the Inverter...\n')
+    w()
+    if shotgun[0] == b:
+        shotgun[0] = l
+        
+    elif shotgun[0] == b:
+        shotgun[0] = l
+        
+    p_item_removal('Inverter')
+    
+def d_inverter():
+    print('The Dealer uses the Inverter...\n')
+    w()
+    if shotgun[0] == b:
+        shotgun[0] = l
+        
+    elif shotgun[0] == b:
+        shotgun[0] = l
+        
+    d_item_removal('Inverter')
+    d_all()
+    
+def p_phone():
+    print('You pick up a burner phone and dial the only contact in there.\n')
+    time.sleep(3)
+    
+    if len(shotgun) <= 2:
+        print('Mysterious Voice: Damn, tough luck.\n')
         w()
         
-    elif shotgun[0] == 'Live':
+    else:
+        phone_prediction = random.randint(0, 2000) % len(shotgun)
+        if phone_prediction == 0:
+            phoneprediction = -1
+        print(f'Mysterious Voice: Shell number {phone_prediction+1}...')
         w()
-        print('\nLive')
+        print(f'Mysterious Voice: {shotgun[phone_prediction]}\n')
         w()
-    
-    item_count_p1 -= 1
-    p1_inventory.remove('Magnifying Glass')
-    
-def mag_p2():
-    global shotgun
-    global item_count_p2
-    global dealer_knows_current
-    dealer_knows_current = True
-    item_count_p2 -= 1
-    p2_inventory.remove('Magnifying Glass')
+    print('You snap the phone in half.\n')
     w()
+    p_item_removal('Burner Phone')
     
-def beer():
-    global shotgun 
-    global item_count_p1
-    global beer_use
-    global find, turn
-    w()
-    if shotgun[0] == 'Blank':
-        print('\nBlank')
+def d_phone():
+    print('The Dealer picks up a burner phone and dials an unknown number.\n')
+    time.sleep(2)
     
-    elif shotgun[0] == 'Live':
-        print('\nLive')
+    if len(shotgun) <= 2:
+        print('[The Dealer]: Shit...\n')
+        w()
+        print('''Also shouldn't happen btw''')
         
-    del shotgun[0]
-    item_count_p1 -= 1
-    beer_use += 1 #Used only for showing tits exact stat at The end of The game
-    p1_inventory.remove('Beer')
-    get_find()
-    dealer_knowledge()
+    else:
+        phone_prediction = random.randint(0, 2000) % len(shotgun)
+        if phone_prediction == 0:
+            phoneprediction = -1
+        print(f'[The Dealer]: Very interesting...\n')
+        w()
+        
+    print('The Dealer snaps the phone in half.\n')
     w()
-    if len(shotgun) == 0:
-        turn = 0
-    
-def beer_p2():
-    global shotgun 
-    global item_count_p2
-    global find
-    print('\nThe Dealer decides to drink its beer')
-    w()
-    if shotgun[0] == 'Blank':
-        print('\nBlank')
-    
-    elif shotgun[0] == 'Live':
-        print('\nLive')
-    w()
-    del shotgun[0]
-    item_count_p2 -= 1
-    p2_inventory.remove('Beer')
-    get_find()
-    dealer_knowledge()
-    
-def saw():
-    global saw_active 
-    global item_count_p1
-    w()
+    d_item_removal('Burner Phone')
+    if phone_prediction not in d_knows:
+        d_knows.append(phone_prediction)
+        d_all()
+
+def p_saw():
+    global saw_active
     if not saw_active:
-        item_count_p1 -= 1
+        print('You used the saw to cut the barrel off.\n')
+        w()
+        print("That's illegal in 5 states.\n")
+        w()
+        p_item_removal('Saw')
         saw_active = True
+    elif saw_active:
+        print('The shotgun is already cut.\n')
+        w()
         
-        p1_inventory.remove('Saw')
-        print('\nYou sawed off the shotgun. Double damage.')
-    else:
-        print('\nYou already used a saw. Nothing Happens')
-    w()
-    
-def saw_p2():
-    global saw_active 
-    global item_count_p2
+def d_saw():
+    global saw_active
     if not saw_active:
-        item_count_p2 -= 1
-        saw_active = True
-        p2_inventory.remove('Saw')
-        print('\nThe Dealer sawed off the shotgun. Double damage.')
-    w()
-    
-def phone(): 
-    global item_count_p1
-    global shotgun
-    global find
-    w()
-    if len(shotgun) == 1:
-        print('\nHell no')
-    elif len(shotgun) == 2:
-        print('\nTake a guess')
-    elif len(shotgun) > 2:
-        print(f'\nShell {find + 1}...')
+        print('The Dealer grabs a saw to cut the barrel off.\n')
         w()
-        print(f'\n{shotgun[find]}')
-    w()
+        print("It likely doesn't care about laws.\n")
+        w()
+        d_item_removal('Saw')
+        saw_active = True
+    elif saw_active:
+        print('This should not happen, There is something wrong with the code that is making the dealer use a saw when the saw has already been used\n')
+        w()
     
-    item_count_p1 -= 1
-    p1_inventory.remove('Phone')
-    
-def phone_p2(): 
-    global item_count_p2
-    global find
-    print('\nThe Dealer decides to use its phone.')
-    dealer_knows_which.append(find)
-    item_count_p2 -= 1
-    p2_inventory.remove('Phone')
-    w()
-    
-def inv(): 
-    global item_count_p1
-    global shotgun
-    w()
-    if shotgun[0] == 'Blank':
-        shotgun[0] = 'Live'
+def p_cuff():
+    global p_cuff_active
+    if not p_cuff_active:
+        print('The Dealer takes a pair of handcuffs from you and puts them on itself.\n')
+        w()
+        print("The Dealer's next turn will be skipped.\n")
+        w()
+        p_item_removal('Handcuffs')
+        p_cuff_active = True
+    elif p_cuff_active:
+        print('The Dealer already has cuffs on itself\n')
+        w()
         
-    elif shotgun[0] == 'Live':
-        shotgun[0] = 'Blank'
-    print('\nInverted')
+def d_cuff():
+    global d_cuff_active
+    if not d_cuff_active:
+        print('The Dealer takes a pair of handcuffs and puts them on you.\n')
+        w()
+        print("Your next turn will be skipped.\n")
+        w()
+        d_item_removal('Handcuffs')
+        d_cuff_active = True
+    elif d_cuff_active:
+        print('This should not happen. Dealer is trying to use handcuffs when handcuffs are already in use\n')
+        w()
+
+def p_cig():
+    global p_health, d_health, max_health
+    print('You smoke a cigarette...\n')
     w()
-    
-    item_count_p1 -= 1
-    p1_inventory.remove('Inverter')
-    
-def inv_p2(): 
-    global item_count_p2
-    global p2_inventory
-    global shotgun
+    if p_health == max_health:
+        print('You are already at full health. Nothing happens.\n')
+    elif p_health < max_health:
+        print('You gain 1 health.\n')
+        p_health += 1
     w()
-    print('\nThe Dealer decides to use its inverter.')
+    p_item_removal('Pack of Cigarettes')
+
+def d_cig():
+    global d_health, d_health, max_health
+    print('The Dealer smokes a cigarette...\n')
     w()
-    if shotgun[0] == 'Blank':
-        shotgun[0] = 'Live'
-        
-    elif shotgun[0] == 'Live':
-        shotgun[0] = 'Blank'
-    print('\nInverted')
+    if d_health == max_health:
+        print('This should not happen. The Dealer is trying to smoke at full health\n')
+    elif d_health < max_health:
+        print('The Dealer gains 1 health.\n')
+        d_health += 1
     w()
-    
-    item_count_p2 -= 1
-    p2_inventory.remove('Inverter')
-    
-def cuff():
-    global cuff_active
-    global item_count_p1 
-    if not cuff_active:
-        cuff_active = True
-        item_count_p1 -= 1
-        
-        p1_inventory.remove('Handcuffs')
-        print('\nThe Dealer takes the handcuffs and cuffs itself.')
+    d_item_removal('Pack of Cigarettes')
+
+def p_adrenaline():
+    if len(p_inventory) >= 9:
+        print("Don't get greedy now...\n")
         w()
     else:
-        print('\nThe Dealer already has handcuffs on. Nothing happens')
-        w()
-        
-def cuff_p2():
-    global cuff_active_p2
-    global item_count_p2 
-    cuff_active = True
-    item_count_p2 -= 1    
-    p1_inventory.remove('Handcuffs')
-    print('\nThe Dealer cuffs you to The table.')
-    w()
-        
-def med():
-    global health
-    global max_health
-    global item_count_p1 
-    chance = random.randint(1, 99)
-    print('\nYou swallow The pill.')
-    w()
-    if chance % 2 == 0:
-        health -= 1
-        print('\nUnlucky. Lost 1 health.')
-        
-    elif chance % 2 != 0:
-        if health >= max_health:
-            print("\nAlready full health. You wasted an item.")
-            health = max_health
-            
-        elif max_health - 1 == health:
-            health += 1
-            print("\nGained 1 health.")
-            
+        good = False
+        for i in d_inventory:
+            if i != 'Adrenaline':
+                good = True
+        if d_inventory == []:
+            print('The Dealer has no items.\n')
+            w()
+        elif ('Adrenaline' in d_inventory) and (not good):
+            print('The Dealer only has adrenaline. You may not take its adrenaline.\n')
+            w()
         else:
-            health += 2
-            print('\nGained 2 health.')
-    w()
-    item_count_p1 -= 1
-    
-    p1_inventory.remove('Expired Medicine')
-    
-def med_p2():
-    global dealer_health
-    global max_health
-    global item_count_p2 
-    chance = random.randint(1, 99)
-    print('\nThe Dealer takes expired medicine.')
-    w()
-    if chance % 2 == 0:
-        dealer_health -= 1
-        print('\nThe Dealer lost 1 health.')
-        
-    elif chance % 2 != 0:
-        if max_health - 1 == dealer_health:
-            dealer_health += 1
-            print("\nThe Deaker gained 1 health.")
-            
+            print("You pump yourself with adrenaline. You may take one of The Dealer's items.\n")
+            w()
+            choice_valid = False
+            while not choice_valid:
+                for i in d_inventory:
+                    print(f'{letters[d_inventory.index(i)]}. {i}')
+                print()
+                choice = input().lower()
+                if choice.upper() not in letters[0:len(d_inventory)]:
+                    print('Not a valid choice. Try again.\n')
+                    time.sleep(1)
+                elif choice.upper() in letters[0:len(d_inventory)]:
+                    if d_inventory[letters.index(choice.upper())] == "Adrenaline":
+                        print('''You are not able to take The Dealer's adrenaline.''')
+                    else:
+                        p_inventory.append(d_inventory.pop(letters.index(choice.upper())))
+                        if p_inventory[-1].startswith(('A','E', 'I', 'O', 'U')):
+                            print(f'You took an {p_inventory[-1].lower()} from it.\n')#vowels
+                        else:
+                            print(f'You took a {p_inventory[-1].lower()} from it.\n')#not vowels
+                            w()
+                        p_item_usage(p_inventory[-1])
+                        p_item_removal('Adrenaline')
+                        choice_valid = True
+
+def d_adrenaline(choice):
+    if len(d_inventory) >= 9:
+        print("Don't get greedy now...\n")
+        w()
+    else:
+        good = False
+        for i in p_inventory:
+            if i != 'Adrenaline':
+                good = True
+        if p_inventory == []:
+            print('This should not happen, the dealer is trying to use adenaline when you have nothing\n')
+            w()
+        elif ('Adrenaline' in p_inventory) and (not good):
+            print('This should not happen, the dealer is trying to use adenaline when you only have adrenaline\n')
+            w()
         else:
-            dealer_health += 2
-            print('\nThe Dealer gained 2 health.')
+            print('The Dealer pumps itself with adrenaline. The Dealer will take one of your items.\n')
+            w()
+            choice_valid = False
+            while not choice_valid:
+                if choice not in p_inventory:
+                    print('Dealer tried to make an invalid choice\n')
+                    time.sleep(1)
+                elif choice in p_inventory:
+                    if choice == "Adrenaline":
+                        print('This should not happen. Dealer is trying to take your adrenaline')
+                    else:
+                        d_inventory.append(p_inventory.pop(p_inventory.index(choice)))
+                        if d_inventory[-1].startswith(('A','E', 'I', 'O', 'U')):
+                            print(f'The Dealer took an {d_inventory[-1].lower()} from you.\n')#vowels
+                            w()
+                        else:
+                            print(f'The Dealer took a {d_inventory[-1].lower()} from you.\n')#not vowels
+                            w()
+                        d_item_removal('Adrenaline')
+                        d_item_usage(d_inventory[-1])
+                    choice_valid = True
+                    
+def p_meds():
+    global p_health, max_health
+    print('You swallow a tablet of expired medicine.\n')
     w()
-    item_count_p2 -= 1
-    
-    p2_inventory.remove('Expired Medicine')
+    damage = random.randint(0, 5000)
+    if damage % 2 == 0:
+        print('Unlucky, the medicine poisons you.\n')
+        p_health -= 1
+    elif damage % 2 == 1:
+        if p_health == (max_health - 1):
+            print('You lucked out and gained 1 health.\n')
+            p_health += 1
+        elif p_health < (max_health - 1):
+            print('You lucked out and gained 2 health.\n')
+            p_health += 2
+        elif p_health == max_health:
+            print('You are already at full health. Nothing happens\n')
+    p_item_removal('Expired Medicine Tablet')
+    w()
 
-def p1():
-    global turn, cuff_active, shotgun, dealer_health, max_health, saw_active, health, letters, p1_inventory, find
-    while turn == 1:
-        ans = input("\n\n\nA. Shoot Dealer\nB. Shoot Yourself\nC. Use an item\nD. See Dealer items\nE. See health\n\n\n").lower()
-        if ans == 'a':
-            shot = shotgun.pop(0)
-            if shot == 'Live': #player live shot
-                print('\n...')
-                w()
-                print('\n*Boom*')
-                w()
-                get_find()
-                if saw_active:
-                    print('\nDealer lost 2 health.')
-                    dealer_health -= 2
-                    if dealer_health < 0:
-                        dealer_health = 0
-                        
-                else:
-                    dealer_health -= 1
-                    print('\nDealer lost 1 health.')
-                w()
-                if cuff_active:
-                    if shotgun == []:
-                        turn = 0
-                    else:
-                        cuff_active = False   
-                else:
-                    turn = 2
-                
-            elif shot == 'Blank':
-                print('\n...')
-                w()
-                print("\n*Click*")
-                w()
-                print('\nDealer unharmed')
-                w()
-                get_find()
-                if cuff_active:
-                    if shotgun == []:
-                        turn = 0
-                    else:
-                        cuff_active = False
-                        turn = 1
-                    
-                else:
-                    turn = 2
-            dealer_knowledge()
-            saw_active = False
-        elif ans == 'b':
-            shot = shotgun.pop(0)
-            if shot == 'Live':
-                print('\n...')
-                w()
-                print("\n*Boom*")
-                w()
-                print('\nYou lose 1 health.')
-                w()
-                get_find()
-                if saw_active:
-                    health -= 2
-                    if health < 0:
-                        health = 0
-                else:
-                    health -=1
-                if cuff_active:
-                    if shotgun == []:
-                        turn = 0
-                    else:
-                        turn = 1
-                        cuff_active = false
-                else:
-                    turn = 2
-                
-            elif shot == 'Blank':
-                print('\n...')
-                w()
-                print('\n*Click*')
-                w()
-                print('\nYou get an extra turn.')
-                w()
-                get_find()
-            dealer_knowledge()
-            saw_active = False
-                
-        elif ans == 'c':
-            item_selection_p1 = True
-            if item_count_p1 == 0:
-                    print('\nYou have no items')
-                    item_selection_p1 = False
-                    w()
-            else:
-                print("\n\nPick your item\n\n")
-                while item_selection_p1:
-                    w()
-                    letter_index = 0
-                    for i in p1_inventory:
-                        print(f'{letters[letter_index]}. {i}')
-                        letter_index += 1
-                    max_letters = letters[0:letter_index]
-                    ans2 = input().upper()
-                    if ans2 not in max_letters:
-                        print('\nNot an item choice\n')
-                        
-                    elif ans2 in max_letters:
-                        ans2 = max_letters.index(ans2)
-                        ans3 = p1_inventory[ans2]
-                        
-                        if ans3 == 'Cigarettes':
-                            cigs()
-                            
-                        elif ans3 == 'Beer':
-                            beer()
-                            
-                        elif ans3 == 'Phone':
-                            phone()
-                            
-                        elif ans3 == "Handcuffs":
-                            cuff()
-                            
-                        elif ans3 == "Magnifying Glass":
-                            mag()
-                            
-                        elif ans3 == 'Inverter':
-                            inv()
-                            
-                        elif ans3 == 'Saw':
-                            saw()
-                            
-                        elif ans3 == 'Expired Medicine':
-                            med()
-                        item_selection_p1 = False
-                
-        elif ans == 'd':
-            if item_count_p2 != 0:
-                print('\nThe Dealer has\n')
-                w()
-                for i in p2_inventory:
-                    print(i)
-            else:
-                print("\nThe Dealer doesn't have any items.")
-            w()
-            print()
-            
-        elif ans == 'e':
-            w()
-            print(f'\nThe Dealer has {dealer_health} health.')
-            w()
-            print(f'\nYou have {health} health.')
-            w()
-            
-        elif ans == 'debug':
-            print(shotgun)
-        
-        elif ans == '1 shot':
-            dealer_health = 1
-            health = 1
-            print('\nThe dealer says "Man fuck you"')
+def d_meds():
+    global d_health, max_health
+    print('The Dealer swallows a tablet of expired medicine.\n')
+    w()
+    damage = random.randint(0, 5000)
+    if d_health == 1:
+        print('This should not happen. Dealer took medicine while at 1 health')
+    if damage % 2 == 0:
+        print('The Dealer gets poisoned and loses 1 health.\n')
+        d_health -= 1
+    elif damage % 2 == 1:
+        if d_health == (max_health - 1):
+            print('The Dealer gained 1 health.\n')
+            d_health += 1
+        elif d_health < (max_health - 1):
+            print('The Dealer gained 2 health.\n')
+            d_health += 2
+        elif d_health == max_health:
+            print('This should not happen. Dealer tried to take medicine at full health\n')
+    d_item_removal('Expired Medicine Tablet')
+    w()
 
-    
-def p2():
-    global item_count_p1, health, cuff_active_p2, max_health, dealer_health, shotgun, letters, beer_use, saw_active, cuff_active, turn
-    while len(shotgun) != 0:    
-        while turn == 2:
-            w()
-            if item_count_p2 != 0:
-                if dealer_health != max_health:
-                    if 'Cigarettes' not in p2_inventory:
-                        if 'Expired Medicine' in p2_inventory:
-                            med_p2()
-                        
-                    elif 'Cigarettes' in p2_inventory:
-                        cigs_p2()
-                        
-                if find not in dealer_knows_which:
-                    if len(shotgun) > 2:
-                        if 'Phone' in p2_inventory:
-                            phone_p2()
-                            continue
-                    
-                if not dealer_knows_current or not dealer_knows_all:
-                    if 'Beer' in p2_inventory:
-                        beer_p2()
-                    
-                    if 'Magnifying Glass' in p2_inventory:
-                        mag_p2()
-                        
-                        
-            if dealer_knows_current or dealer_knows_all: #dealer knows and is about to shoot
-                shot = shotgun.pop(0)
-                if shot == 'Live':
-                    if 'Saw' in p2_inventory:
-                        saw_p2()
-                        print('\nThe Dealer points the shotgun at you.')
-                        w()
-                        print('*Boom*')
-                        w()
-                        print('You lose 2 health.')
-                        health -= 2
-                        if health < 0:
-                            health = 0
-                        saw_active = False
-                        dealer_knowledge()
-                    else:
-                        print('\nThe Dealer points the shotgun at you.')
-                        w()
-                        print('\n*Boom*')
-                        w()
-                        print('\nYou lose 1 health.')
-                        w()
-                        health -= 1
-                        dealer_knowledge()    
-                            
-                elif shot == 'Blank':
-                    if 'Inverter' in p2_inventory:
-                        print('The Dealer decides to use his Inverter')
-                        if 'Saw' in p2_inventory:
-                            saw_p2()
-                            print('\nThe Dealer points the shotgun at you.')
-                            w()
-                            print('\n*Boom*')
-                            w()
-                            print('You lose 2 health.')
-                            health -= 2
-                            if health < 0:
-                                health = 0
-                            saw_active = False
-                        else:
-                            print('\nThe Dealer points the shotgun at you.')
-                            w()
-                            print('\n*Boom*')
-                            w()
-                            print('\nYou lose 1 health.')
-                            health -= 1
-                        dealer_knowledge()
-                        
-                    elif 'Inverter' not in p2_inventory:
-                        print('\nThe Dealer points the shotgun at itself')
-                        w()
-                        print('\n*Click*')
-                        dealer_knowledge()
-                if cuff_active:
-                    if shotgun == []:
-                        turn = 0
-                    else:
-                        cuff_active = False
-                        turn = 2
-                else:
-                    turn = 1
-                
-            elif not dealer_knows_current or not dealer_knows_all:
-                shot = shotgun.pop(0)
-                if live_count > blank_count:
-                    if 'Saw' in p2_inventory:
-                        saw_p2()
-                    print('\nThe Dealer points the shotgun at you.')
-                    w()
-                    if shot == 'Blank':
-                        print('\n*Click*')
-                        w()
-                        if cuff_active_p2:
-                            cuff_active_p2 = False
-                        else:
-                            turn = 1
-                        saw_active = False
-            
-                    elif shot == 'Live':
-                        print('*Boom*')
-                        w()
-                        if saw_active:
-                            health -= 2
-                            if health < 0:
-                                health = 0
-                            saw_active = False
-                            print('\nYou lose 2 health.')
-                        else:
-                            print('\nYou lose 1 health.')
-                            health -= 1
-                        if cuff_active_p2:
-                            if shotgun == []:
-                                turn = 0
-                            else:
-                                if shotgun == []:
-                                    turn = 0
-                                else:
-                                    cuff_active_p2 = False
-                        else:
-                            turn = 1
-                        w()
-                    dealer_knowledge()        
-                elif live_count < blank_count:
-                    print('\nThe Dealer points the shotgun at itself')
-                    w()
-                    if shot == 'Live':
-                        print('\n*Boom*')
-                        w()
-                        if saw_active:
-                            print('\nThe Dealer loses 2 health.')
-                            dealer_health -= 2
-                            if dealer_health < 0:
-                                dealer_health = 0
-                        else:
-                            print('\nThe Dealer loses 1 health.')
-                            dealer_health -= 1
-                        if cuff_active_p2:
-                            if shotgun == []:
-                                turn = 0
-                            else:
-                                cuff_active_p2 = False
-                        else:
-                            turn = 1
-                    elif shot == 'Blank':
-                        print('\n*Click*')
-                        w()
-                    saw_active = False    
-                    dealer_knowledge()
-                    w()
-                elif live_count == blank_count:
-                    chance_shot = random.randint(1,100)
-                    if chance_shot % 2 == 0:
-                        print('\nThe Dealer points the shotgun at itself.')
-                        if shot == 'Live':
-                            print('\n*Boom*')
-                            w()
-                            if saw_active:
-                                print('\nThe Dealer loses 2 health.')
-                                dealer_health -= 2
-                                if dealer_health < 0:
-                                    dealer_health = 0
-                            else:
-                                print('\nThe Dealer loses 1 health.')
-                                dealer_health -= 1
-                            if cuff_active_p2:
-                                if shotgun == []:
-                                    turn = 0
-                                else:
-                                    cuff_active_p2 = False
-                            else:
-                                turn = 1
-                        elif shot == 'Blank':
-                            print('\n*Click*')
-                            w()
-                        saw_active = False    
-                        dealer_knowledge()
-                        w()
-def get_items():
-    global item_count_p1, item_count_p2
-    max_items = random.randint(3,8)
-    for i in range(max_items):
-        item_index = random.randint(0,8)
-        p1_inventory.append(item_list[item_index])
-        item_count_p1 += 1
-    
-    for i in range(max_items):
-        item_index = random.randint(0,8)
-        p2_inventory.append(item_list[item_index])
-        item_count_p2 += 1
-first_time = True
-input('I will not explain the rules. You should already know how this goes.\n\n\nEnter your name:\n')
-w()
-print("\nJust kidding, don't care.\n\n\n\n\n\n")
-w()
 
-while playing:
-    while dead:
-        p1_inventory = []
-        p2_inventory = []
-        if p1_death:
-            print('\n'*67)
-            w()
-            print ('\nYou have died. Would you like to play again?\n')
-            w()
-            play_again = input('\nY or N\n').upper()
-            if play_again == 'N':
-                w()
-                print('\nSee you soon...\n')
-                w()
-                quit('Shhh, secret quit message')
-            elif play_again == "Y":
-                w()
-                print("\nWell, let's get back to it...\n")
-                w()
-                print('\nShall we?\n')
-                w()
-                print('\n' * 67)
-                dead = False
-                print("Let's do this again.")
-                p1_death = False
-        elif p2_death:
-            print('\n' * 67)
-            w()
-            print('You have won. Congratulations.')
-            w()
-            w()
-            print('\n...\n')
-            w()
-            w()
-            print('What? You want money?\n')
-            w()
-            w()
-            print('Buddy, our god is too lazy to code that.\n')
-            w()
-            w()
-            play_again = input('I guess you could put your life on the line again. ¯\_(ツ)_/¯\n\nY or N\n').lower()
-            if play_again == 'y':
-                w()
-                print("\nWell, let's get back to it...\n")
-                w()
-                print('\nShall we?\n')
-                w()
-                print('\n' * 67)
-                dead = False
-                print("Let's do this again.")
-                p2_death = False
-            elif play_again == 'n':
-                w()
-                print('\nSee you soon...\n')
-                w()
-                quit('Shhh, secret quit message')
-    while (first_time or (dealer_health and health) > 0) or dead == False:
-        blank_count = 0
-        live_count = 0
-        w()
-        turn = 1
-        load_shotgun()
-        
-        if blank_count == 1:
-            print ('\n1 Blank\n')
-        elif blank_count != 1:
-            print(f'\n{blank_count} Blanks\n')
-        if live_count == 1:
-            print('1 Live\n\n')
-        elif live_count != 1:
-            print(f'{live_count} Lives\n\n')
-        w()
-        cuff_active = False
-        cuff_active_p2 = False
-        item_obtain_1 = len(p1_inventory)
-        if first_time:
-            get_items()
-            get_health()
-            print(f'You each get {max_health} health and {len(p1_inventory)} items')
-            w()
-            first_time = False
-        elif not first_time:
-            get_items()
-            get_health()
-        input('\nInsert any input to collect your item.\n')
-        inv_index = item_obtain_1
-        inventory_list = 0
+def p_item_usage(ans):
+    ans1 = item_list.index(ans)
+    if ans1 == 0:
+        p_phone()
+    elif ans1 == 1:
+        p_magnify()
+    elif ans1 == 2:
+        p_cuff()
+    elif ans1 == 3:
+        p_inverter()
+    elif ans1 == 4:
+        p_beer()
+    elif ans1 == 5:
+        p_saw()
+    elif ans1 == 6:
+        p_cig()
+    elif ans1 == 7:
+        p_meds()
+    elif ans1 == 8:
+        p_adrenaline()
+
+def d_item_usage(ans):
+    ans1 = item_list.index(ans)
+    if ans1 == 0:
+        d_phone()
+    elif ans1 == 1:
+        d_magnify()
+    elif ans1 == 2:
+        d_cuff()
+    elif ans1 == 3:
+        d_inverter()
+    elif ans1 == 4:
+        d_beer()
+    elif ans1 == 5:
+        d_saw()
+    elif ans1 == 6:
+        d_cig()
+    elif ans1 == 7:
+        d_meds()
+    elif ans1 == 8:
+        d_adrenaline()
+
+
+def d_item_usage2(item):
+    if item in d_adr_inventory:
         print()
-        for i in p1_inventory:
-            if inv_index > 7:
-                break
-            print(f'Item {inv_index + 1}: {p1_inventory[inv_index]}')
-            input()
-            inv_index += 1
-            inventory_list += 1
+        if item in d_inventory:
+            d_item_usage(item)
+        else:
+            if 'Adrenaline' in d_inventory:
+                d_adrenaline(item)
+    else:
+        return False
+    
             
-        if len(p2_inventory) > 8:
-            del p2_inventory[7:-1]
-            item_count_2 = 8
-            
-        if len(p1_inventory) > 8:
-            del p1_inventory[7:-1]
-            item_count_p1 = 8
-            
-            
-        while len(shotgun) != 0:
-            while turn == 1:
-                if shotgun == []:
-                    break
-                print('\nYour turn\n\n')
-                w()
-                p1()
-                print()
-            if health == 0 or dealer_health == 0:
-                dead = True
-                if health == 0:
-                    p1_death = True
-                elif dealer_health == 0:
-                    p2_death = True
-                turn = 0
-                break
-            while turn == 2:
-                if shotgun == []:
-                    break
-                print("\nDealer's turn\n\n")
-                w()
-                p2()
-                print()
-                if shotgun == []:
-                    break
-            if health == 0 or dealer_health == 0:
-                dead = True
-                if health == 0:
-                    p1_death = True
-                elif dealer_health == 0:
-                    p2_death = True
-                turn = 0
-                break
-                    
 
-#When done with game, remove secret debug and 1 shot option
-#Code a new method for shotgun randomization
-#Code adrenaline
-#dealer used a beer even though the entire shotgun was live
-#GOD FUCKING DAMN IT, IT STILL TRIES TO .pop FROM AN EMPTY SHOTGUN
+
+
+
+
+
+
+
+
+
+
+#time to code the dealer
+def dealer():
+    global turn, d_cuff_active, p_cuff_active, l, b, shotgun
+    while turn == 2:
+        d_all()
+        #Healing items
+        while d_health < max_health:
+            #Cigs
+            d_item_usage2('Pack of Cigarettes')
+            #Meds
+            if 'Pack of Cigarettes' not in d_adr_inventory: #meds is an exception to the item_usage2 thing
+                if 'Expired Medicine Tablet' in d_adr_inventory:
+                    if 'Expired Medicine Tablet' not in d_inventory:
+                        if 'Adrenaline' in d_inventory:
+                            if d_health == 1:
+                                break
+                            elif d_health > 1:
+                                d_adrenaline('Expired Medicine Tablet')
+                        elif 'Adrenaline' not in d_inventory:
+                            break
+                    elif 'Expired Medicine Tablet' in d_inventory:
+                        if d_health == 1:
+                            break
+                        elif d_health > 1:
+                            d_item_usage('Expired Medicine Tablet')
+                else:
+                    break
+        #Revealing items
+        while not d_knows_current:
+            
+            a = d_item_usage2('Magnifying Glass')
+            
+            b = d_item_usage2('Can of Beer')
+            
+            if not (a or b):
+                break
+            
+        if ('Inverter' in d_adr_inventory) and (d_knows_current) and (shotgun[0] == b):
+            d_item_usage2('Inverter')
+            
+        while (d_knows_current) and (('Inverter' not in d_inventory) or (('Inverter' not in d_adr_inventory) or ('Adrenaline' not in d_inventory))):
+            if shotgun != []:
+                if shotgun[0] == b:
+                    if 'Can of Beer' in d_adr_inventory:
+                        d_item_usage2('Can of Beer')
+                    else:
+                        break
+                else:
+                    break
+            else:
+                break
+        while ('Burner Phone' in d_inventory) or (('Burner Phone' in d_adr_inventory) and ('Adrenaline') in d_inventory):
+            if len(shotgun) < 3:
+                break
+            else:
+                d_item_usage2('Burner Phone')
+        
+        #misc items
+        if shotgun != []:
+            if (d_knows_current and (shotgun[0] == l) and (not saw_active)) or ((not d_knows_current) and (l_amt > b_amt)):
+                d_item_usage2('Saw')
+            
+        if not d_cuff_active:
+            d_item_usage2('Handcuffs')
+            
+        if shotgun == []:
+            turn = 0
+            d_cuff_active = False
+            
+        elif d_cuff_active and (shotgun != []):
+            d_cuff_active = False
+            
+        else:
+            turn = 1
+
+def player():
+    global turn, d_cuff_active, p_cuff_active, l, b, shotgun
