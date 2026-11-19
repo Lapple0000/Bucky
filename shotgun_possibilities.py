@@ -7,7 +7,6 @@ l = live
 live_count = 0
 blank_count = 0
 shotgun = []
-import erthith
 import random
 
 shell_2 = {"1l1b":
@@ -278,21 +277,19 @@ def all_pos(yes):
                 print(f"{k}")
         print('\n\n\n\n')
         
+shell_list_test = ["shell_2", 'shell_3', 'shell_4', 'shell_5', 'shell_6', 'shell_7', 'shell_8']
 shell_list = [shell_2, shell_3, shell_4, shell_5, shell_6, shell_7, shell_8]
-        
+
 def load_shotgun():
-    global shell_list, shotgun_cap, live_count, blank_count, shotgun, shell_2, shell_3, shell_4, shell_5, shell_6, shell_7, shell_8
-    shell_choice = random.randint(0,6)
-    shell_amount_list = []
-    pos_list = []
-    
-    for i in shell_list[shell_choice]:
-        shell_amount_list.append(i)
-    shell_amount_rand = random.randint(0, len(shell_amount_list) - 1)
-    for j in (shell_list[shell_choice])[shell_amount_list[shell_amount_rand]]:
-        pos_list.append(j)
-    pos_rand = random.randint(0, len(pos_list) - 1)
-    shotgun = (shell_list[shell_choice])[(shell_amount_list[shell_amount_rand])][(pos_list[pos_rand])]
-    
-load_shotgun()
-print(shotgun)
+    shotgun_pull_amount = (random.randint(1, 2000) % 7) #Pulls how many shells will be in the shotgun
+    shotgun_amount = shell_list[shotgun_pull_amount] #Actually calls up the dictionary value of how many shells are in the shotgun
+    shotgun_pos1_list = []
+    for i in shotgun_amount:#Makes a for loop to add every shell L:B ratio into a list
+        shotgun_pos1_list.append(i)
+    shotgun_pos1 = shotgun_pos1_list[(random.randint(1, 5000) % (len(shotgun_pos1_list))-1)] #Picks which L:B ratio the shotgun will have
+    shotgun_pos2_list = []
+    for i in shotgun_amount[shotgun_pos1]: #Makes a for loop to add every shell distribution into a list
+        shotgun_pos2_list.append(i)
+    shotgun_pos2 = shotgun_pos2_list[(random.randint(1, 7000) % (len(shotgun_pos2_list)-1))] #Picks which distribution the shotgun will have, determining the whole shotgun
+    #shotgun = shotgun_amount[shotgun_pos1[shotgun_pos2]] #Loads the shotgun. Used in main code
+    return shotgun_amount[shotgun_pos1][shotgun_pos2]
